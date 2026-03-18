@@ -24,7 +24,8 @@ import {
   Sigma,
   Settings,
   X,
-  KeyRound
+  KeyRound,
+  Download
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { clsx, type ClassValue } from 'clsx';
@@ -502,6 +503,111 @@ export default function App() {
     correctAnswer: autoLatex(q.correctAnswer || ''),
   }));
 
+  /**
+   * Export parsedQuestions to a Word-compatible .doc file (HTML-in-DOC technique).
+   * Works without any extra npm packages — Word opens HTML blobs with .doc extension.
+   */
+  const downloadAsWord = () => {
+    if (!parsedQuestions.length) return;
+
+    // Strip LaTeX dollar signs for plain-text Word display
+    const stripLatex = (s: string) =>
+      s
+        .replace(/\$\$([\s\S]*?)\$\$/g, '$1')
+        .replace(/\$([^$]+)\$/g, '$1')
+        .replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, '($1)/($2)')
+        .replace(/\\cdot/g, '·')
+        .replace(/\\times/g, '×')
+        .replace(/\\pm/g, '±')
+        .replace(/_{([^}]+)}/g, (_, s) => s)
+        .replace(/_([^{])/g, '$1')
+        .replace(/\^{([^}]+)}/g, (_, s) => `^${s}`)
+        .replace(/\^([^{])/g, '^$1')
+        .trim();
+
+    const LETTERS = ['A', 'B', 'C', 'D'];
+
+    const qRows = parsedQuestions.map((q, idx) => {
+      const optRows = (q.options || []).map((opt, oi) => {
+        const letter = LETTERS[oi] || String(oi + 1);
+        const isCorrect = letter === (q.correctAnswer || '').trim().toUpperCase();
+        const optText = stripLatex(opt);
+        const bg = isCorrect ? '#d4edda' : '#ffffff';
+        const mark = isCorrect ? ' ✓' : '';
+        return `<tr><td style="width:40px;background:${bg};border:1px solid #dee2e6;padding:6px 10px;font-weight:${isCorrect ? 'bold' : 'normal'};">${letter}</td><td style="background:${bg};border:1px solid #dee2e6;padding:6px 10px;">${optText}${mark}</td></tr>`;
+      }).join('');
+
+      const optsTable = q.options?.length
+        ? `<table style="width:100%;border-collapse:collapse;margin-top:6px;">${optRows}</table>`
+        : '';
+
+      const typeBadge = `<span style="background:#e0e7ff;color:#3730a3;padding:2px 8px;border-radius:12px;font-size:11px;margin-right:6px;">${q.type}</span>`;
+      const levelBadge = `<span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-size:11px;">${q.level}</span>`;
+
+      const corrText = q.options?.length
+        ? (q.options[LETTERS.indexOf((q.correctAnswer || '').toUpperCase())] ?? q.correctAnswer)
+        : q.correctAnswer;
+
+      return `
+        <tr>
+          <td style="vertical-align:top;width:36px;padding:14px 8px 14px 14px;border-bottom:1px solid #e2e8f0;font-weight:bold;color:#4f46e5;font-size:15px;">${idx + 1}.</td>
+          <td style="vertical-align:top;padding:14px 14px 14px 4px;border-bottom:1px solid #e2e8f0;">
+            <div style="margin-bottom:6px;">${typeBadge}${levelBadge}</div>
+            <p style="font-weight:600;font-size:14px;margin:0 0 8px 0;line-height:1.6;">${stripLatex(q.content)}</p>
+            ${optsTable}
+            ${!q.options?.length && corrText ? `<p style="margin:8px 0 0 0;color:#059669;font-size:13px;"><strong>Đáp án:</strong> ${stripLatex(corrText || '')}</p>` : ''}
+            ${q.options?.length && corrText ? `<p style="margin:8px 0 0 0;color:#059669;font-size:12px;"><strong>Đáp án đúng:</strong> ${stripLatex(corrText || '')}</p>` : ''}
+          </td>
+        </tr>`;
+    }).join('');
+
+    const subject = analysis
+      ? (analysis.match(/Môn học[:\s]+([^\n]+)/i)?.[1]?.trim() ?? 'Bài học')
+      : 'Bài học';
+    const level = analysis
+      ? (analysis.match(/Cấp học[:\s]+([^\n]+)/i)?.[1]?.trim() ?? '')
+      : '';
+    const today = new Date().toLocaleDateString('vi-VN');
+
+    const html = `
+<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+  <meta charset="UTF-8">
+  <title>Bộ câu hỏi - ${subject}</title>
+  <!--[if gte mso 9]>
+  <xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml>
+  <![endif]-->
+  <style>
+    body { font-family: 'Times New Roman', serif; font-size: 13pt; margin: 2.5cm; color: #1a1a1a; }
+    h1 { font-size: 16pt; text-align: center; color: #1e3a8a; margin-bottom: 4px; }
+    .meta { text-align: center; color: #64748b; font-size: 11pt; margin-bottom: 24px; }
+    table { border-collapse: collapse; width: 100%; }
+    p { margin: 0; }
+  </style>
+</head>
+<body>
+  <h1>📋 BỘ CÂU HỎI KIỂM TRA</h1>
+  <p class="meta">${subject}${level ? ' · ' + level : ''} &nbsp;|&nbsp; Ngày tạo: ${today} &nbsp;|&nbsp; Tổng: ${parsedQuestions.length} câu</p>
+  <table>
+    ${qRows}
+  </table>
+  <p style="margin-top:32px;color:#94a3b8;font-size:10pt;text-align:center;">Được tạo bởi Trợ lý AI Thiết kế Bài học</p>
+</body>
+</html>`;
+
+    const blob = new Blob([html], { type: 'application/msword;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `bo-cau-hoi-${subject.replace(/\s+/g, '-').toLowerCase()}.doc`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(url); document.body.removeChild(a); }, 1000);
+  };
+
   // Load mammoth.js from CDN (for DOCX extraction)
   const loadMammoth = (): Promise<any> => new Promise((resolve, reject) => {
     const w = window as any;
@@ -620,93 +726,117 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
   };
 
   return (
-    <div className="min-h-screen mesh-bg text-slate-900 font-sans selection:bg-indigo-100">
+    <div className="min-h-screen mesh-bg text-slate-900 selection:bg-indigo-100">
       {/* Header */}
-      <header className="sticky top-0 z-50 glass-panel border-b border-white/20">
-        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={reset}>
-            <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">
-              <Gamepad2 size={22} />
+      <header className="sticky top-0 z-50 glass-panel border-b border-slate-200/60">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-8 h-[60px] flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={reset}>
+            <div className="w-9 h-9 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-indigo-300/40">
+              <Gamepad2 size={19} />
             </div>
-            <h1 className="font-bold text-lg tracking-tight gradient-text hidden sm:block">Trợ lý Tạo Trò Chơi AI</h1>
+            <div className="hidden sm:block">
+              <h1 className="font-extrabold text-base leading-tight gradient-text">Trợ lý AI Dạy Học</h1>
+              <p className="text-[10px] text-slate-400 leading-none">Game-based Learning Platform</p>
+            </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <div className="hidden md:flex items-center gap-2">
               <StageIndicator currentStage={stage} />
             </div>
             {stage !== 'home' && (
-              <button onClick={reset} className="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors">
-                <RefreshCw size={14} /> Trang chủ
+              <button onClick={reset} className="text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors px-2 py-1 rounded-lg hover:bg-indigo-50">
+                <RefreshCw size={13} /> Trang chủ
               </button>
             )}
             <button
               onClick={() => setIsSettingsOpen(true)}
-              className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 hover:bg-slate-100 rounded-xl transition-all"
+              className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-xs font-semibold rounded-xl shadow-md shadow-indigo-200/50 hover:brightness-110 transition-all"
             >
-              <Settings size={16} className="text-slate-600" />
-              <div className="text-left hidden sm:block">
-                <div className="text-xs font-bold text-slate-700 leading-tight">Cài đặt API</div>
-                <div className="text-[10px] font-semibold text-red-500 leading-tight">Lấy API key để sử dụng</div>
-              </div>
+              <Settings size={14} />
+              <span className="hidden sm:inline">Cài đặt API</span>
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-12">
+      <main className="max-w-[1440px] mx-auto px-4 sm:px-8 py-8">
         <AnimatePresence mode="wait">
           {/* HOME SCREEN */}
           {stage === 'home' && (
-            <motion.div key="home" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-10">
-              <div className="text-center space-y-4 py-8">
-                <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-4 py-2 rounded-full text-sm font-semibold border border-indigo-100">
-                  <Gamepad2 size={16} /> Trợ lý thiết kế hoạt động dạy học
+            <motion.div key="home" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} className="space-y-10">
+              {/* Hero */}
+              <div className="text-center space-y-5 py-10">
+                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-50 to-violet-50 text-indigo-700 px-5 py-2 rounded-full text-sm font-semibold border border-indigo-200/60 shadow-sm">
+                  <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                  Trợ lý AI cho giáo viên — Powered by Gemini
                 </div>
-                <h2 className="text-4xl md:text-5xl font-black text-slate-900 leading-tight">
+                <h2 className="text-4xl md:text-6xl font-black text-slate-900 leading-[1.1] tracking-tight">
                   Tạo Trò Chơi<br />
                   <span className="gradient-text">Học Tập Bằng AI</span>
                 </h2>
-                <p className="text-slate-500 text-lg max-w-xl mx-auto">Chọn cách bạn muốn mình giúp để bắt đầu nhé!</p>
+                <p className="text-slate-500 text-lg max-w-2xl mx-auto leading-relaxed">Từ bộ câu hỏi của bạn hoặc nội dung bài học — AI giúp tạo trò chơi tương tác sinh động trong vài giây.</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
                 {/* Mode 1 Card */}
-                <motion.div whileHover={{ scale: 1.02, y: -4 }} onClick={() => setStage('m1_type')}
-                  className="glass-card p-8 rounded-3xl cursor-pointer border-2 border-transparent hover:border-emerald-300 hover:shadow-xl hover:shadow-emerald-100 transition-all group"
+                <motion.div whileHover={{ scale: 1.015, y: -4 }} onClick={() => setStage('m1_type')}
+                  className="glass-card rounded-3xl cursor-pointer border-2 border-transparent hover:border-emerald-300/80 hover:shadow-xl hover:shadow-emerald-100/70 overflow-hidden group"
                 >
-                  <div className="w-14 h-14 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center text-white text-2xl mb-5 shadow-lg shadow-emerald-200 group-hover:scale-110 transition-transform">
-                    📄
-                  </div>
-                  <h3 className="text-2xl font-black text-slate-900 mb-2">Tôi đã có câu hỏi</h3>
-                  <p className="text-slate-500 text-sm mb-5">Dành cho giáo viên đã có bộ câu hỏi. Hệ thống sẽ gợi ý trò chơi phù hợp và đưa câu hỏi vào trò chơi tương tác.</p>
-                  <div className="space-y-2">
-                    {['✅ Chọn dạng câu hỏi đang có', '📋 Dán hoặc nhập câu hỏi', '🎮 Hệ thống gợi ý trò chơi phù hợp', '▶️ Chơi thử ngay!'].map(s => (
-                      <div key={s} className="text-xs text-slate-400 flex items-center gap-2">{s}</div>
-                    ))}
-                  </div>
-                  <div className="mt-6 flex items-center gap-2 text-emerald-600 font-bold text-sm">
-                    Bắt đầu <ChevronRight size={16} />
+                  <div className="h-2 bg-gradient-to-r from-emerald-400 to-teal-500" />
+                  <div className="p-8">
+                    <div className="w-14 h-14 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center text-white text-2xl mb-5 shadow-lg shadow-emerald-200/60 group-hover:scale-110 transition-transform">
+                      📄
+                    </div>
+                    <h3 className="text-2xl font-black text-slate-900 mb-2">Tôi đã có câu hỏi</h3>
+                    <p className="text-slate-500 text-sm mb-5 leading-relaxed">Dành cho giáo viên đã có bộ câu hỏi. Hệ thống sẽ gợi ý trò chơi phù hợp và đưa câu hỏi vào trò chơi tương tác.</p>
+                    <div className="space-y-2 mb-6">
+                      {['✅ Chọn dạng câu hỏi đang có', '📋 Nhập/tải file Word hoặc PDF', '🎮 Hệ thống gợi ý trò chơi phù hợp', '▶️ Chơi thử ngay!'].map(s => (
+                        <div key={s} className="text-xs text-slate-400 flex items-center gap-2">{s}</div>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2 text-emerald-600 font-bold text-sm">
+                      Bắt đầu <ChevronRight size={16} />
+                    </div>
                   </div>
                 </motion.div>
 
                 {/* Mode 2 Card */}
-                <motion.div whileHover={{ scale: 1.02, y: -4 }} onClick={() => { if (!apiKey) { setIsSettingsOpen(true); setIsApiKeyRequired(true); } else setStage('m2_analyze'); }}
-                  className="glass-card p-8 rounded-3xl cursor-pointer border-2 border-transparent hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-100 transition-all group"
+                <motion.div whileHover={{ scale: 1.015, y: -4 }} onClick={() => { if (!apiKey) { setIsSettingsOpen(true); setIsApiKeyRequired(true); } else setStage('m2_analyze'); }}
+                  className="glass-card rounded-3xl cursor-pointer border-2 border-transparent hover:border-indigo-300/80 hover:shadow-xl hover:shadow-indigo-100/70 overflow-hidden group"
                 >
-                  <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl flex items-center justify-center text-white text-2xl mb-5 shadow-lg shadow-indigo-200 group-hover:scale-110 transition-transform">
-                    🤖
-                  </div>
-                  <h3 className="text-2xl font-black text-slate-900 mb-2">AI tạo câu hỏi</h3>
-                  <p className="text-slate-500 text-sm mb-5">Dành cho giáo viên chưa có câu hỏi. AI sẽ phân tích bài học và tạo câu hỏi theo ý muốn của bạn.</p>
-                  <div className="space-y-2">
-                    {['📚 Nhập nội dung bài học / ảnh', '🤖 AI phân tích đầu bài', '❓ Chọn dạng, mức độ, số lượng', '🎮 AI sinh câu hỏi → chỉnh sửa → chơi!'].map(s => (
-                      <div key={s} className="text-xs text-slate-400 flex items-center gap-2">{s}</div>
-                    ))}
-                  </div>
-                  <div className="mt-6 flex items-center gap-2 text-indigo-600 font-bold text-sm">
-                    Bắt đầu <ChevronRight size={16} />
+                  <div className="h-2 bg-gradient-to-r from-indigo-500 to-violet-600" />
+                  <div className="p-8">
+                    <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl flex items-center justify-center text-white text-2xl mb-5 shadow-lg shadow-indigo-200/60 group-hover:scale-110 transition-transform">
+                      🤖
+                    </div>
+                    <h3 className="text-2xl font-black text-slate-900 mb-2">AI tạo câu hỏi</h3>
+                    <p className="text-slate-500 text-sm mb-5 leading-relaxed">Dành cho giáo viên chưa có câu hỏi. AI phân tích bài học và tạo câu hỏi theo ý muốn của bạn.</p>
+                    <div className="space-y-2 mb-6">
+                      {['📚 Nhập nội dung bài học / tải ảnh', '🤖 AI phân tích chủ đề', '❓ Chọn dạng, mức độ, số lượng', '🎮 AI sinh câu hỏi → chỉnh sửa → chơi!'].map(s => (
+                        <div key={s} className="text-xs text-slate-400 flex items-center gap-2">{s}</div>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2 text-indigo-600 font-bold text-sm">
+                      Bắt đầu <ChevronRight size={16} />
+                    </div>
                   </div>
                 </motion.div>
+              </div>
+
+              {/* Feature strip */}
+              <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[
+                  { icon: '⚡', label: 'Tạo câu hỏi tức thì', desc: 'AI sinh ra trong vài giây' },
+                  { icon: '🎮', label: '7 trò chơi tích hợp', desc: 'Đa dạng, sinh động' },
+                  { icon: '📐', label: 'LaTeX & Hóa học', desc: 'Hỗ trợ công thức khoa học' },
+                  { icon: '📄', label: 'Xuất file Word', desc: 'Tải về dùng ngay' },
+                ].map(f => (
+                  <div key={f.label} className="glass-card p-4 rounded-2xl text-center">
+                    <div className="text-2xl mb-2">{f.icon}</div>
+                    <div className="text-sm font-bold text-slate-700">{f.label}</div>
+                    <div className="text-xs text-slate-400 mt-1">{f.desc}</div>
+                  </div>
+                ))}
               </div>
             </motion.div>
           )}
@@ -1219,7 +1349,17 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
 
                   {/* Game Launch Section */}
                   {parsedQuestions.length > 0 && (
-                    <div className="mt-8 pt-6 border-t border-indigo-100">
+                    <div className="mt-8 pt-6 border-t border-indigo-100 space-y-3">
+                      {/* Download Word — chỉ hiển thị ở Chế độ 2 */}
+                      {stage === 'm2_questions' && (
+                        <button
+                          onClick={downloadAsWord}
+                          className="w-full py-3 bg-white border-2 border-emerald-500 text-emerald-700 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-50 hover:shadow-md transition-all"
+                        >
+                          <Download size={20} />
+                          Tải về file Word (.doc)
+                        </button>
+                      )}
                        <button
                          onClick={() => {
                             setStage(stage === 'm1_edit' ? 'm1_game' : 'm2_game');
@@ -1538,8 +1678,8 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
       </main>
 
       {/* Footer */}
-      <footer className="max-w-5xl mx-auto px-6 py-12 border-t border-slate-200 text-center">
-        <p className="text-sm text-slate-400">© 2024 Trợ lý Thiết kế Bài học AI. Công cụ hỗ trợ giáo dục thông minh.</p>
+      <footer className="max-w-[1440px] mx-auto px-4 sm:px-8 py-6 mt-4 border-t border-slate-200/60 text-center">
+        <p className="text-xs text-slate-400">© 2025 Trợ lý AI Dạy Học · Game-based Learning Platform · Được tạo bởi Gemini AI</p>
       </footer>
     </div>
   );

@@ -1,87 +1,72 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 @import "tailwindcss";
 
-@layer utilities {
-  .glass-panel {
-    @apply bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl;
-  }
-
-  .glass-card {
-    @apply bg-white/90 backdrop-blur-md border border-white/50 shadow-lg hover:shadow-xl transition-all duration-300;
-  }
-
-  .gradient-text {
-    @apply text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-fuchsia-600;
-  }
-
-  .animated-bg {
-    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
-  }
-
-  .mesh-bg {
-    background-color: #f8fafc;
-    background-image:
-      radial-gradient(at 40% 20%, hsla(271, 78%, 76%, 0.2) 0px, transparent 50%),
-      radial-gradient(at 80% 0%, hsla(305, 80%, 78%, 0.2) 0px, transparent 50%),
-      radial-gradient(at 0% 50%, hsla(190, 83%, 72%, 0.2) 0px, transparent 50%),
-      radial-gradient(at 80% 50%, hsla(347, 77%, 78%, 0.2) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, hsla(22, 100%, 77%, 0.2) 0px, transparent 50%),
-      radial-gradient(at 80% 100%, hsla(242, 100%, 70%, 0.2) 0px, transparent 50%),
-      radial-gradient(at 0% 0%, hsla(343, 100%, 76%, 0.2) 0px, transparent 50%);
-  }
-}
-
-@keyframes gradientBG {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
+/* ─── Global ─────────────────────────────────────────────── */
 body {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* Custom Scrollbar for better UX */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* ─── Background ─────────────────────────────────────────── */
+.mesh-bg {
+  background-color: #eef2ff;
+  background-image:
+    radial-gradient(at 0%   0%,   hsla(256, 80%, 72%, 0.13) 0px, transparent 55%),
+    radial-gradient(at 100% 0%,   hsla(215, 85%, 68%, 0.10) 0px, transparent 55%),
+    radial-gradient(at 50%  100%, hsla(280, 80%, 72%, 0.10) 0px, transparent 55%),
+    radial-gradient(at 0%   100%, hsla(340, 80%, 72%, 0.07) 0px, transparent 55%),
+    radial-gradient(at 100% 100%, hsla(190, 85%, 68%, 0.07) 0px, transparent 55%);
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+/* ─── Glass surfaces ─────────────────────────────────────── */
+.glass-panel {
+  background: rgba(255,255,255,0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(148,163,184,0.2);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+.glass-card {
+  background: rgba(255,255,255,0.96);
+  border: 1px solid rgba(203,213,225,0.7);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+.glass-card:hover {
+  box-shadow: 0 6px 20px rgba(99,102,241,0.10);
 }
 
-/* Markdown prose overrides for math */
+/* ─── Gradient text ──────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 50%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c7d2fe; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #a5b4fc; }
+
+/* ─── KaTeX / Math ───────────────────────────────────────── */
 .prose .katex-display {
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 1rem 0;
+  padding: 0.75rem 0;
 }
 
-.prose ul {
-  @apply list-disc list-inside space-y-1;
-}
+.prose ul { list-style: disc; padding-left: 1.25rem; }
+.prose p  { line-height: 1.7; }
 
-.prose p {
-  @apply leading-relaxed;
+/* ─── Animations ──────────────────────────────────────────── */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(0.85); }
 }
+.animate-pulse { animation: pulse-dot 2s cubic-bezier(0.4,0,0.6,1) infinite; }
