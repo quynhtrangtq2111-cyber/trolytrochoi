@@ -58,6 +58,7 @@ const GAME_LIBRARY = [
     id: 'default',
     name: 'Quiz Mở Thẻ',
     emoji: '🎴',
+    icon3d: 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Flower%20playing%20cards/3D/flower_playing_cards_3d.png',
     description: 'Trả lời đúng để lật mở từng thẻ bài.',
     compatibleTypes: ['Trắc nghiệm khách quan', 'Đúng / Sai'],
     colorFrom: 'from-indigo-500', colorTo: 'to-violet-500',
@@ -67,6 +68,7 @@ const GAME_LIBRARY = [
     id: 'vuot_ai',
     name: 'Vượt Ải Tri Thức',
     emoji: '⚔️',
+    icon3d: 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Crossed%20swords/3D/crossed_swords_3d.png',
     description: 'Giao diện tối. Trả lời nhanh vượt qua từng ải.',
     compatibleTypes: ['Trắc nghiệm khách quan', 'Đúng / Sai'],
     colorFrom: 'from-sky-500', colorTo: 'to-blue-600',
@@ -76,6 +78,7 @@ const GAME_LIBRARY = [
     id: 'vua_tieng_viet',
     name: 'Vua Tiếng Việt',
     emoji: '👑',
+    icon3d: 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Crown/3D/crown_3d.png',
     description: 'Sắp xếp chữ cái trong thời gian giới hạn.',
     compatibleTypes: ['Trả lời ngắn', 'Điền khuyết'],
     colorFrom: 'from-pink-500', colorTo: 'to-rose-500',
@@ -84,7 +87,8 @@ const GAME_LIBRARY = [
   {
     id: 'san_kho_bau',
     name: 'Săn Kho Báu',
-    emoji: '🗃️',
+    emoji: '🪙',
+    icon3d: 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Coin/3D/coin_3d.png',
     description: 'Thu thập vàng bằng cách trả lời đúng. Hỗ trợ kéo-thả điền khuyết.',
     compatibleTypes: ['Trắc nghiệm khách quan', 'Đúng / Sai', 'Trả lời ngắn', 'Điền khuyết'],
     colorFrom: 'from-amber-500', colorTo: 'to-yellow-600',
@@ -94,6 +98,7 @@ const GAME_LIBRARY = [
     id: 'buc_tranh_bi_an',
     name: 'Bức Tranh Bí Ẩn',
     emoji: '🖼️',
+    icon3d: 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Framed%20picture/3D/framed_picture_3d.png',
     description: 'Trả lời đúng để lộ dần bức tranh ẩn. Hình ảnh tùy chỉnh.',
     compatibleTypes: ['Trắc nghiệm khách quan', 'Đúng / Sai', 'Trả lời ngắn'],
     colorFrom: 'from-slate-600', colorTo: 'to-slate-800',
@@ -103,6 +108,7 @@ const GAME_LIBRARY = [
     id: 'ong_tim_chu',
     name: 'Ong Tìm Chữ',
     emoji: '🐝',
+    icon3d: 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Honeybee/3D/honeybee_3d.png',
     description: 'Tìm đáp án ẩn trong bảng chữ cái. Kéo để chọn, ngang/dọc/chéo.',
     compatibleTypes: ['Trả lời ngắn', 'Điền khuyết'],
     colorFrom: 'from-yellow-400', colorTo: 'to-orange-500',
@@ -112,6 +118,7 @@ const GAME_LIBRARY = [
     id: 'tranh_tai_keo_co',
     name: 'Tranh Tài Kéo Co',
     emoji: '🏆',
+    icon3d: 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Trophy/3D/trophy_3d.png',
     description: '2 đội đấu đả luân phiên, kéo dây về phía chiến thắng!',
     compatibleTypes: ['Trắc nghiệm khách quan', 'Đúng / Sai'],
     colorFrom: 'from-blue-700', colorTo: 'to-red-700',
@@ -121,6 +128,7 @@ const GAME_LIBRARY = [
     id: 'cap_doi',
     name: 'Cặp Đôi Hoàn Hảo',
     emoji: '🔗',
+    icon3d: 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Link/3D/link_3d.png',
     description: 'Nối các cặp nội dung tương ứng ở cột A và cột B',
     compatibleTypes: ['Ghép nối', 'Trả lời ngắn'],
     colorFrom: 'from-teal-500', colorTo: 'to-cyan-600',
@@ -130,6 +138,7 @@ const GAME_LIBRARY = [
     id: 'thap_tri_tue',
     name: 'Tháp Trí Tuệ',
     emoji: '🏰',
+    icon3d: 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Castle/3D/castle_3d.png',
     description: 'Trả lời đúng để xây từng tầng tháp. Sai 3 câu thì tháp đổ!',
     compatibleTypes: ['Đúng / Sai', 'Trả lời ngắn', 'Điền khuyết'],
     colorFrom: 'from-sky-400', colorTo: 'to-blue-500',
@@ -861,7 +870,7 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
                 {/* Hero row: text + small robot */}
                 <div className="relative z-10 flex flex-row items-center justify-between gap-4 px-8 pt-8 pb-4">
                   <div className="flex-1 space-y-3">
-                    <h2 className="font-headline text-3xl md:text-4xl font-extrabold leading-tight">Chinh phục tri thức<br/>qua trò chơi!</h2>
+                    <h2 className="font-headline text-3xl md:text-4xl font-extrabold leading-tight uppercase tracking-wide">SMART EDU PLAY<br/><span className="opacity-90">TẠO ĐIỂM NHẤN</span></h2>
                     <p className="text-base opacity-90 font-medium font-body">Học tập chưa bao giờ vui đến thế cùng người bạn robot thông minh.</p>
                   </div>
                   {/* Smaller robot image */}
@@ -882,18 +891,18 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
 
                 {/* Two mode cards - inside same frame */}
                 <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-4 px-8 pb-8">
-                  {/* Mode 1: Tạo trò chơi */}
+                  {/* Mode 1: Tạo trò chơi — nền TRẮNG */}
                   <div
                     onClick={() => setStage('m1_type')}
-                    className="group bg-white/15 backdrop-blur-sm hover:bg-white/25 rounded-2xl p-5 cursor-pointer transition-all duration-300 border border-white/20 hover:border-white/40 hover:shadow-xl"
+                    className="group bg-white hover:bg-gray-50 rounded-2xl p-5 cursor-pointer transition-all duration-300 border border-white/60 hover:shadow-2xl"
                   >
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
+                      <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
                         <img alt="game mascot" className="w-8 h-8 rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpp1vHqRfnLazWrQG9rlQmQtXCl8Y3kYF1e9q42pxWRdppCQ83fJJpM8aGMAzFO-GH7CgUZE4dO2FD-rUCBihAb997Nr_EpmeIqsqBmxKLfzDCRp24vg-tcw3X0YhJyw_sYp-OQiwyO-9m7ZBayduTqgaxSvjRwCVk7FsBpp9SoIHasMGqy97_jDFQ8uSRnqAKxUWp2DfffFBRPL5tcTX4LWGhgWJAx4P-xQFDASXP8bSfEFznpDz_5CeKFj0Q4FKTC5MeHzmC-BI"/>
                       </div>
                       <div>
-                        <h3 className="font-headline text-lg font-extrabold text-white">Tạo trò chơi</h3>
-                        <p className="text-white/70 text-xs font-medium">Dùng khi đã có bộ câu hỏi</p>
+                        <h3 className="font-headline text-lg font-extrabold text-primary">Tạo trò chơi</h3>
+                        <p className="text-on-surface-variant text-xs font-medium">Dùng khi đã có bộ câu hỏi</p>
                       </div>
                     </div>
                     <div className="flex flex-col gap-1.5">
@@ -902,26 +911,27 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
                         { icon: 'upload_file', text: 'Dán text hoặc tải Word / PDF' },
                         { icon: 'sports_esports', text: 'Chọn trò chơi & chơi ngay' },
                       ].map(f => (
-                        <div key={f.icon} className="flex items-center gap-2 bg-white/10 rounded-xl px-2.5 py-1.5">
-                          <span className="material-symbols-outlined text-white/80 text-sm">{f.icon}</span>
-                          <span className="text-xs font-semibold text-white/90">{f.text}</span>
+                        <div key={f.icon} className="flex items-center gap-2 bg-primary/8 rounded-xl px-2.5 py-1.5" style={{ background: 'rgba(0,85,196,0.06)' }}>
+                          <span className="material-symbols-outlined text-primary text-sm">{f.icon}</span>
+                          <span className="text-xs font-semibold text-on-surface-variant">{f.text}</span>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  {/* Mode 2: AI tạo câu hỏi */}
+                  {/* Mode 2: AI tạo câu hỏi — nền VÀNG */}
                   <div
                     onClick={() => { if (!apiKey) { setIsSettingsOpen(true); setIsApiKeyRequired(true); } else setStage('m2_analyze'); }}
-                    className="group bg-white/15 backdrop-blur-sm hover:bg-white/25 rounded-2xl p-5 cursor-pointer transition-all duration-300 border border-white/20 hover:border-white/40 hover:shadow-xl"
+                    className="group rounded-2xl p-5 cursor-pointer transition-all duration-300 hover:shadow-2xl border border-yellow-300/60 hover:border-yellow-400"
+                    style={{ background: 'linear-gradient(135deg, #fde68a 0%, #fbbf24 100%)' }}
                   >
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
+                      <div className="w-10 h-10 bg-yellow-900/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
                         <img alt="AI mascot" className="w-8 h-8 rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLAWUo7m24evPHHWO9qAHFbPleP_8DiagfcwiEq-oxB4YYZ5BVr8xyxy2x1fJmOOQallFzgP09uL1ZMaUmpNqQPbtnZUnVG3CM3tM0bN4U23fmTICpZiQeqtgDRyZ4EW_nYhV7qSDXKfomxqGQ9rKikVbxcJSZWu5KCOMSfi2HS6ejzAnBCKtgo8zibdHnLyW3dN3s7MO4Tsuz0Lu9IZ47IgJ2VYoFIwKGUP9FBiJdOLSv3N9BRc0q36RH39mCQIrPeHcuEokS49E"/>
                       </div>
                       <div>
-                        <h3 className="font-headline text-lg font-extrabold text-white">AI tạo câu hỏi</h3>
-                        <p className="text-white/70 text-xs font-medium">Tạo đề thông minh trong tích tắc</p>
+                        <h3 className="font-headline text-lg font-extrabold text-yellow-900">AI tạo câu hỏi</h3>
+                        <p className="text-yellow-800 text-xs font-medium">Tạo đề thông minh trong tích tắc</p>
                       </div>
                     </div>
                     <div className="flex flex-col gap-1.5">
@@ -930,9 +940,9 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
                         { icon: 'auto_awesome', text: 'AI phân tích & sinh câu hỏi tự động' },
                         { icon: 'download', text: 'Tải về bản Word ngay sau khi tạo' },
                       ].map(f => (
-                        <div key={f.icon} className="flex items-center gap-2 bg-white/10 rounded-xl px-2.5 py-1.5">
-                          <span className="material-symbols-outlined text-white/80 text-sm">{f.icon}</span>
-                          <span className="text-xs font-semibold text-white/90">{f.text}</span>
+                        <div key={f.icon} className="flex items-center gap-2 bg-yellow-900/10 rounded-xl px-2.5 py-1.5">
+                          <span className="material-symbols-outlined text-yellow-800 text-sm">{f.icon}</span>
+                          <span className="text-xs font-semibold text-yellow-900">{f.text}</span>
                         </div>
                       ))}
                     </div>
@@ -1641,18 +1651,30 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
                             <div style={{ position:'absolute', top:-30, right:-30, width:100, height:100, background:'rgba(255,255,255,0.15)', borderRadius:'50%', filter:'blur(14px)', pointerEvents:'none' }} />
                             <div style={{ position:'absolute', bottom:-20, left:10, width:70, height:70, background:'rgba(255,255,255,0.08)', borderRadius:'50%', filter:'blur(10px)', pointerEvents:'none' }} />
 
-                            {/* 3D emoji icon */}
+                            {/* 3D game icon image */}
                             <div
-                              className="select-none group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300"
-                              style={{
-                                fontSize: 80,
-                                lineHeight: 1,
-                                filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.4)) drop-shadow(0 3px 6px rgba(0,0,0,0.3))',
-                                transform: 'rotate(-10deg)',
-                                zIndex: 2,
-                              }}
+                              className="select-none group-hover:scale-115 group-hover:-rotate-6 group-hover:-translate-y-1 transition-all duration-300 ease-out"
+                              style={{ zIndex: 2, filter: 'drop-shadow(0 14px 28px rgba(0,0,0,0.45)) drop-shadow(0 4px 8px rgba(0,0,0,0.3))' }}
                             >
-                              {g.emoji}
+                              {g.icon3d ? (
+                                <img
+                                  src={g.icon3d}
+                                  alt={g.name}
+                                  style={{
+                                    width: 110,
+                                    height: 110,
+                                    objectFit: 'contain',
+                                    transform: 'rotate(-10deg)',
+                                  }}
+                                  onError={(e) => {
+                                    const target = e.currentTarget as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    if (target.nextSibling) (target.nextSibling as HTMLElement).style.display = 'block';
+                                  }}
+                                />
+                              ) : (
+                                <span style={{ fontSize: 80, lineHeight: 1, display: 'block', transform: 'rotate(-10deg)' }}>{g.emoji}</span>
+                              )}
                             </div>
 
                             {/* Game name chip — glassmorphism */}
