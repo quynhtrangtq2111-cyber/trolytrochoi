@@ -8,6 +8,7 @@ import { GoogleGenAI } from "@google/genai";
 import Markdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import {
   FileText,
@@ -37,6 +38,7 @@ import BucTranhBiAnGame from './BucTranhBiAnGame';
 import OngTimChuGame from './OngTimChuGame';
 import TranhTaiKeoCoGame from './TranhTaiKeoCoGame';
 import CapDoiHoanHaoGame from './CapDoiHoanHaoGame';
+import ThapTriTueGame from './ThapTriTueGame';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -120,9 +122,18 @@ const GAME_LIBRARY = [
     name: 'Cặp Đôi Hoàn Hảo',
     emoji: '🔗',
     description: 'Nối các cặp nội dung tương ứng ở cột A và cột B',
-    compatibleTypes: ['Ghép nối', 'Điền khuyết', 'Trả lời ngắn', 'Trắc nghiệm khách quan'],
+    compatibleTypes: ['Ghép nối', 'Trả lời ngắn'],
     colorFrom: 'from-teal-500', colorTo: 'to-cyan-600',
     hoverBorder: 'hover:border-teal-400',
+  },
+  {
+    id: 'thap_tri_tue',
+    name: 'Tháp Trí Tuệ',
+    emoji: '🏰',
+    description: 'Trả lời đúng để xây từng tầng tháp. Sai 3 câu thì tháp đổ!',
+    compatibleTypes: ['Đúng / Sai', 'Trả lời ngắn', 'Điền khuyết'],
+    colorFrom: 'from-sky-400', colorTo: 'to-blue-500',
+    hoverBorder: 'hover:border-sky-400',
   },
 ];
 
@@ -517,106 +528,7 @@ export default function App() {
    * Export parsedQuestions to a Word-compatible .doc file (HTML-in-DOC technique).
    * Works without any extra npm packages — Word opens HTML blobs with .doc extension.
    */
-  const downloadAsWord = () => {
-    if (!parsedQuestions.length) return;
 
-    // Strip LaTeX dollar signs for plain-text Word display
-    const stripLatex = (s: string) =>
-      s
-        .replace(/\$\$([\s\S]*?)\$\$/g, '$1')
-        .replace(/\$([^$]+)\$/g, '$1')
-        .replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, '($1)/($2)')
-        .replace(/\\cdot/g, '·')
-        .replace(/\\times/g, '×')
-        .replace(/\\pm/g, '±')
-        .replace(/_{([^}]+)}/g, (_, s) => s)
-        .replace(/_([^{])/g, '$1')
-        .replace(/\^{([^}]+)}/g, (_, s) => `^${s}`)
-        .replace(/\^([^{])/g, '^$1')
-        .trim();
-
-    const LETTERS = ['A', 'B', 'C', 'D'];
-
-    const qRows = parsedQuestions.map((q, idx) => {
-      const optRows = (q.options || []).map((opt, oi) => {
-        const letter = LETTERS[oi] || String(oi + 1);
-        const isCorrect = letter === (q.correctAnswer || '').trim().toUpperCase();
-        const optText = stripLatex(opt);
-        const bg = isCorrect ? '#d4edda' : '#ffffff';
-        const mark = isCorrect ? ' ✓' : '';
-        return `<tr><td style="width:40px;background:${bg};border:1px solid #dee2e6;padding:6px 10px;font-weight:${isCorrect ? 'bold' : 'normal'};">${letter}</td><td style="background:${bg};border:1px solid #dee2e6;padding:6px 10px;">${optText}${mark}</td></tr>`;
-      }).join('');
-
-      const optsTable = q.options?.length
-        ? `<table style="width:100%;border-collapse:collapse;margin-top:6px;">${optRows}</table>`
-        : '';
-
-      const typeBadge = `<span style="background:#e0e7ff;color:#3730a3;padding:2px 8px;border-radius:12px;font-size:11px;margin-right:6px;">${q.type}</span>`;
-      const levelBadge = `<span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-size:11px;">${q.level}</span>`;
-
-      const corrText = q.options?.length
-        ? (q.options[LETTERS.indexOf((q.correctAnswer || '').toUpperCase())] ?? q.correctAnswer)
-        : q.correctAnswer;
-
-      return `
-        <tr>
-          <td style="vertical-align:top;width:36px;padding:14px 8px 14px 14px;border-bottom:1px solid #e2e8f0;font-weight:bold;color:#4f46e5;font-size:15px;">${idx + 1}.</td>
-          <td style="vertical-align:top;padding:14px 14px 14px 4px;border-bottom:1px solid #e2e8f0;">
-            <div style="margin-bottom:6px;">${typeBadge}${levelBadge}</div>
-            <p style="font-weight:600;font-size:14px;margin:0 0 8px 0;line-height:1.6;">${stripLatex(q.content)}</p>
-            ${optsTable}
-            ${!q.options?.length && corrText ? `<p style="margin:8px 0 0 0;color:#059669;font-size:13px;"><strong>Đáp án:</strong> ${stripLatex(corrText || '')}</p>` : ''}
-            ${q.options?.length && corrText ? `<p style="margin:8px 0 0 0;color:#059669;font-size:12px;"><strong>Đáp án đúng:</strong> ${stripLatex(corrText || '')}</p>` : ''}
-          </td>
-        </tr>`;
-    }).join('');
-
-    const subject = analysis
-      ? (analysis.match(/Môn học[:\s]+([^\n]+)/i)?.[1]?.trim() ?? 'Bài học')
-      : 'Bài học';
-    const level = analysis
-      ? (analysis.match(/Cấp học[:\s]+([^\n]+)/i)?.[1]?.trim() ?? '')
-      : '';
-    const today = new Date().toLocaleDateString('vi-VN');
-
-    const html = `
-<!DOCTYPE html>
-<html xmlns:o="urn:schemas-microsoft-com:office:office"
-      xmlns:w="urn:schemas-microsoft-com:office:word"
-      xmlns="http://www.w3.org/TR/REC-html40">
-<head>
-  <meta charset="UTF-8">
-  <title>Bộ câu hỏi - ${subject}</title>
-  <!--[if gte mso 9]>
-  <xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml>
-  <![endif]-->
-  <style>
-    body { font-family: 'Times New Roman', serif; font-size: 13pt; margin: 2.5cm; color: #1a1a1a; }
-    h1 { font-size: 16pt; text-align: center; color: #1e3a8a; margin-bottom: 4px; }
-    .meta { text-align: center; color: #64748b; font-size: 11pt; margin-bottom: 24px; }
-    table { border-collapse: collapse; width: 100%; }
-    p { margin: 0; }
-  </style>
-</head>
-<body>
-  <h1>📋 BỘ CÂU HỎI KIỂM TRA</h1>
-  <p class="meta">${subject}${level ? ' · ' + level : ''} &nbsp;|&nbsp; Ngày tạo: ${today} &nbsp;|&nbsp; Tổng: ${parsedQuestions.length} câu</p>
-  <table>
-    ${qRows}
-  </table>
-  <p style="margin-top:32px;color:#94a3b8;font-size:10pt;text-align:center;">Được tạo bởi Trợ lý AI Thiết kế Bài học</p>
-</body>
-</html>`;
-
-    const blob = new Blob([html], { type: 'application/msword;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `bo-cau-hoi-${subject.replace(/\s+/g, '-').toLowerCase()}.doc`;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => { URL.revokeObjectURL(url); document.body.removeChild(a); }, 1000);
-  };
 
   // Load mammoth.js from CDN (for DOCX extraction)
   const loadMammoth = (): Promise<any> => new Promise((resolve, reject) => {
@@ -721,6 +633,78 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
     setM1QuestionTypes([]); setM1RawText('');
   };
 
+  const processLatexToMathML = (text: string) => {
+    if (!text) return '';
+    // Xử lý các khối công thức dạng $...$ hoặc $$...$$
+    return text.replace(/\$\$(.*?)\$\$|\$(.*?)\$/g, (match, g1, g2) => {
+      const math = g1 || g2;
+      try {
+        // Render sang MathML thuần túy để MS Word nhận dạng nhúng Equation (Equation Native)
+        return katex.renderToString(math, { output: 'mathml', throwOnError: false });
+      } catch(e) {
+        return match;
+      }
+    });
+  };
+
+  const downloadAsWord = () => {
+    if (!parsedQuestions || parsedQuestions.length === 0) {
+      alert("Chưa có câu hỏi nào để tải xuống!");
+      return;
+    }
+
+    let html = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head>
+      <meta charset='utf-8'>
+      <title>Export</title>
+      <style>
+        body { font-family: 'Times New Roman', serif; font-size: 13pt; line-height: 1.5; }
+        p { margin: 0 0 8pt 0; }
+        .q-blue { color: #002da7; font-weight: bold; }
+        .opt-letter { font-weight: bold; }
+        u { text-decoration: underline; }
+      </style>
+      </head>
+      <body>
+    `;
+
+    parsedQuestions.forEach((q, idx) => {
+      const qContent = processLatexToMathML(q.content);
+      html += `<p><span class="q-blue">Câu ${idx + 1}.</span> ${qContent}</p>`;
+      
+      if (q.options && q.options.length > 0) {
+        // Bảng 4 cột cân bằng để hiển thị đáp án giống MS Word chuẩn
+        html += `<table width="100%" style="margin-bottom: 8pt; border-collapse: collapse; border: none;"><tr>`;
+        q.options.forEach((opt, oIdx) => {
+          const letter = ['A', 'B', 'C', 'D'][oIdx] || '';
+          let optHtml = `<span class="opt-letter">${letter}.</span> ${processLatexToMathML(opt)}`;
+          if (q.correctAnswer === letter) {
+            optHtml = `<u>${optHtml}</u>`;
+          }
+          // Tự động chia độ rộng tương ứng số đáp án (thường là 4 -> 25%)
+          html += `<td width="${100 / q.options.length}%" valign="top">${optHtml}</td>`;
+        });
+        html += `</tr></table>`;
+      } else if (q.correctAnswer) {
+         html += `<p><b><u>Đáp án:</u></b> ${processLatexToMathML(q.correctAnswer)}</p>`;
+      }
+    });
+
+    html += `</body></html>`;
+
+    // Export dưới dạng .doc (MS Word hỗ trợ đọc HTML schema native)
+    const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'CauHoi_SmartEdu.doc';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+
   const getQuestionsPart = () => {
     if (!questions) return '';
     const parts = questions.split('### 🎮 BƯỚC 4');
@@ -773,18 +757,15 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
       <header className="app-header">
         <div className="app-header-inner">
           {/* Brand */}
-          <div className="flex items-center gap-2.5 cursor-pointer shrink-0" onClick={reset}>
-            <div style={{ background: 'var(--blue)' }} className="w-8 h-8 rounded-lg flex items-center justify-center text-white">
-              <Gamepad2 size={17} />
+          <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={reset}>
+            <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center overflow-hidden hover:scale-105 transition-transform active:scale-95 duration-200">
+              <img alt="friendly mascot character" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmSJiKl98tZVAYx7gkYOpRphmxgZYcAPnF1fDMF1Fs7TQkYXkT6pHEnuQkBuAEwsX7Dm8zbjm3kero3MYDxmIRkLbRPTVKCsv5jX37c0EShmANz5NqiegbtKb9zWOeUdrTEqlJ-54EXf3NdB0Sc9xv_Lq1DNPmul5AzaqWx1BOZu9tkU2w4VwouYs6M5lWZi_4GrMspVjGR57BPuzcG7GQrQHBmAZL_Qtyx01p9gl8i1EBm0MkE9dzC6dkAuzQaDW4F-xyqLX0kPU"/>
             </div>
-            <div className="hidden sm:block">
-              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>Trợ lí tạo trò chơi học tập</div>
-              <div style={{ fontSize: 10, color: 'var(--text-3)', lineHeight: 1 }}>AI-powered · Gemini</div>
-            </div>
+            <h1 className="font-headline font-black text-2xl text-primary tracking-tight hidden sm:block">SmartEdu Play</h1>
           </div>
 
           {/* Step bar (center) */}
-          <div className="flex-1 flex justify-center px-4">
+          <div className="flex-1 flex justify-center px-4 hidden md:flex">
             {isM1 && <StepBar steps={m1Steps} current={curM1} />}
             {isM2 && <StepBar steps={m2Steps} current={curM2} />}
           </div>
@@ -792,12 +773,12 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
           {/* Actions */}
           <div className="flex items-center gap-2 shrink-0">
             {stage !== 'home' && (
-              <button className="btn btn-ghost btn--sm" onClick={reset}>
-                <RefreshCw size={13} /> <span className="hidden sm:inline">Trang chủ</span>
+              <button className="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-primary hover:scale-105 transition-transform active:scale-95 duration-200" onClick={reset}>
+                <span className="material-symbols-outlined">home</span>
               </button>
             )}
-            <button className="btn btn-primary btn--sm" onClick={() => setIsSettingsOpen(true)}>
-              <Settings size={14} /> <span className="hidden sm:inline">API Key</span>
+            <button className="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-primary hover:scale-105 transition-transform active:scale-95 duration-200" onClick={() => setIsSettingsOpen(true)}>
+                <span className="material-symbols-outlined">settings</span>
             </button>
           </div>
         </div>
@@ -813,75 +794,99 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
 
           {/* ═══ HOME ═══ */}
           {stage === 'home' && (
-            <motion.div key="home" initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }}>
-              {/* Hero */}
-              <div style={{ textAlign:'center', padding:'40px 0 32px' }}>
-                <div className="badge badge-blue" style={{ marginBottom:14, fontSize:12 }}>
-                  <span style={{ width:7,height:7,borderRadius:'50%',background:'var(--blue)',display:'inline-block' }} />
-                  Chào mừng bạn đến với
+            <motion.div key="home" initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }} className="space-y-12 max-w-5xl mx-auto w-full">
+              {/* Hero Section */}
+              <section className="relative bg-gradient-to-br from-primary-container to-primary text-on-primary rounded-xl p-8 overflow-hidden flex flex-col md:flex-row items-center gap-8 min-h-[400px]">
+                <div className="z-10 text-center md:text-left md:w-3/5 space-y-6">
+                  <h2 className="font-headline text-4xl md:text-5xl font-extrabold leading-tight">Chinh phục tri thức qua trò chơi!</h2>
+                  <p className="text-lg opacity-90 font-medium font-body">Học tập chưa bao giờ vui đến thế cùng người bạn robot thông minh.</p>
+                  <button className="bg-secondary text-on-secondary-fixed font-headline font-bold text-xl px-10 py-5 rounded-xl bubbly-shadow hover:scale-105 transition-all active:scale-95 inline-block"
+                     onClick={() => { if (!apiKey) { setIsSettingsOpen(true); setIsApiKeyRequired(true); } else setStage('m2_analyze'); }}>
+                      Bắt đầu ngay
+                  </button>
                 </div>
-                <h1 style={{ fontSize:'clamp(28px,5vw,52px)', fontWeight:900, lineHeight:1.1, marginBottom:14, color:'var(--text)' }}>
-                  <span className="gradient-text">SMARTEDU PLAY</span>
-                </h1>
-                <p style={{ color:'var(--text-3)', fontSize:18, fontWeight: 600, maxWidth:560, margin:'0 auto', lineHeight:1.7 }}>
-                  Trợ lí AI tạo trò chơi học tập
-                </p>
-              </div>
+                <div className="relative md:w-2/5 flex justify-center items-center">
+                  <div className="absolute w-64 h-64 bg-white/20 rounded-full blur-3xl"></div>
+                  <img alt="friendly robot mascot" className="w-full max-w-[300px] z-10 drop-shadow-2xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDx7oooeNSK1o3faWc94sY9mdm9aBQwrKEMpY76Ddq3s8-oQ64EMeREZjJ-z3_2dFarh4rV5g1o2OimUsY12bExLWX2NJuwCWVsBAVjxoASsYnV6nequuzlvUKWwuiAat3PJuIH8iOp4iusp0hArmIbv7mfh5rktskgt7JJiSzm_8APCchfjulBapLIMBAvLAT_HF3y7HbYZv-_G7nrH7mVbwutEDemxhDA0vfzDitoJEC8nOazl_Rd1s5JgjviwYTmf-A1Ry4iTcM"/>
+                </div>
+                {/* Decorative blobs */}
+                <div className="absolute -top-10 -right-10 w-40 h-40 bg-tertiary-container/30 rounded-full blur-2xl"></div>
+                <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-secondary-container/20 rounded-full blur-2xl"></div>
+              </section>
 
-              {/* Mode cards */}
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))', gap:20, maxWidth:860, margin:'0 auto 28px' }}>
-                {/* Mode 1 */}
-                <div className="card card--hover" style={{ borderTop:'3px solid #10b981', padding:0, overflow:'hidden' }} onClick={() => setStage('m1_type')}>
-                  <div style={{ padding:'24px 24px 20px' }}>
-                    <div style={{ fontSize:36, marginBottom:14 }}>🎮</div>
-                    <h2 style={{ fontSize:20, fontWeight:800, marginBottom:8, color:'var(--text)' }}>Tạo trò chơi từ câu hỏi có sẵn</h2>
-                    <p style={{ color:'var(--text-3)', fontSize:13, lineHeight:1.6, marginBottom:16 }}>Dành cho GV đã có sẵn bộ câu hỏi, cần chọn và chơi trò chơi tương tác ngay.</p>
-                    <div style={{ display:'flex', flexDirection:'column', gap:6, marginBottom:20 }}>
-                      {['✅ Chọn dạng câu hỏi', '📋 Dán câu hỏi hoặc tải file Word/PDF', '🎮 Hệ thống gợi ý trò chơi phù hợp'].map(s =>(
-                        <div key={s} style={{ fontSize:12, color:'var(--text-3)' }}>{s}</div>
-                      ))}
-                    </div>
-                    <button className="btn btn-primary" style={{ background:'#10b981', boxShadow:'none', width:'100%', justifyContent:'center' }}>
-                      Bắt đầu <ChevronRight size={15} />
-                    </button>
+              {/* Main Actions: Bento-style asymmetrical cards */}
+              <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Action Card 1: Tạo trò chơi từ bộ hỏi có sẵn (m1_type) */}
+                <div onClick={() => setStage('m1_type')} className="group bg-surface-container-lowest rounded-xl p-8 flex flex-col items-center text-center space-y-4 hover:shadow-2xl transition-all duration-300 border-b-8 border-primary-fixed cursor-pointer relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-2 bg-primary"></div>
+                  <div className="w-32 h-32 bg-primary-container/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <img alt="game mascot" className="w-24 h-24" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpp1vHqRfnLazWrQG9rlQmQtXCl8Y3kYF1e9q42pxWRdppCQ83fJJpM8aGMAzFO-GH7CgUZE4dO2FD-rUCBihAb997Nr_EpmeIqsqBmxKLfzDCRp24vg-tcw3X0YhJyw_sYp-OQiwyO-9m7ZBayduTqgaxSvjRwCVk7FsBpp9SoIHasMGqy97_jDFQ8uSRnqAKxUWp2DfffFBRPL5tcTX4LWGhgWJAx4P-xQFDASXP8bSfEFznpDz_5CeKFj0Q4FKTC5MeHzmC-BI"/>
                   </div>
+                  <div>
+                    <h3 className="font-headline text-2xl font-extrabold text-primary">Tạo trò chơi</h3>
+                    <p className="text-on-surface-variant font-medium mt-2 font-body">Biến bài học thành cuộc phiêu lưu kỳ thú</p>
+                  </div>
+                  <span className="material-symbols-outlined text-4xl text-primary font-bold">add_circle</span>
                 </div>
 
-                {/* Mode 2 */}
-                <div className="card card--hover" style={{ borderTop:'3px solid var(--blue)', padding:0, overflow:'hidden' }}
-                  onClick={() => { if (!apiKey) { setIsSettingsOpen(true); setIsApiKeyRequired(true); } else setStage('m2_analyze'); }}>
-                  <div style={{ padding:'24px 24px 20px' }}>
-                    <div style={{ fontSize:36, marginBottom:14 }}>🤖</div>
-                    <h2 style={{ fontSize:20, fontWeight:800, marginBottom:8, color:'var(--text)' }}>AI tạo câu hỏi từ bài học</h2>
-                    <p style={{ color:'var(--text-3)', fontSize:13, lineHeight:1.6, marginBottom:16 }}>Nhập nội dung bài học, AI phân tích và tạo trọn bộ câu hỏi + phương án hoạt động.</p>
-                    <div style={{ display:'flex', flexDirection:'column', gap:6, marginBottom:20 }}>
-                      {['📚 Nhập nội dung bài học / tải ảnh', '🤖 AI phân tích chủ đề, sinh câu hỏi', '✂️ Chỉnh sửa câu hỏi trước khi chơi'].map(s =>(
-                        <div key={s} style={{ fontSize:12, color:'var(--text-3)' }}>{s}</div>
-
-                      ))}
-                    </div>
-                    <button className="btn btn-primary" style={{ width:'100%', justifyContent:'center' }}>
-                      Bắt đầu <ChevronRight size={15} />
-                    </button>
+                {/* Action Card 2: AI tạo câu hỏi từ bài học (m2_analyze) */}
+                <div onClick={() => { if (!apiKey) { setIsSettingsOpen(true); setIsApiKeyRequired(true); } else setStage('m2_analyze'); }} className="group bg-surface-container-lowest rounded-xl p-8 flex flex-col items-center text-center space-y-4 hover:shadow-2xl transition-all duration-300 border-b-8 border-tertiary-fixed cursor-pointer relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-2 bg-tertiary"></div>
+                  <div className="w-32 h-32 bg-tertiary-container/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <img alt="AI mascot" className="w-24 h-24" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLAWUo7m24evPHHWO9qAHFbPleP_8DiagfcwiEq-oxB4YYZ5BVr8xyxy2x1fJmOOQallFzgP09uL1ZMaUmpNqQPbtnZUnVG3CM3tM0bN4U23fmTICpZiQeqtgDRyZ4EW_nYhV7qSDXKfomxqGQ9rKikVbxcJSZWu5KCOMSfi2HS6ejzAnBCKtgo8zibdHnLyW3dN3s7MO4Tsuz0Lu9IZ47IgJ2VYoFIwKGUP9FBiJdOLSv3N9BRc0q36RH39mCQIrPeHcuEokS49E"/>
                   </div>
+                  <div>
+                    <h3 className="font-headline text-2xl font-extrabold text-tertiary">AI tạo câu hỏi</h3>
+                    <p className="text-on-surface-variant font-medium mt-2 font-body">Tạo bộ câu hỏi thông minh trong tích tắc</p>
+                  </div>
+                  <span className="material-symbols-outlined text-4xl text-tertiary font-bold">auto_awesome</span>
                 </div>
-              </div>
+              </section>
 
-              {/* Feature strip */}
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', gap:12, maxWidth:860, margin:'0 auto' }}>
-                {[
-                  { icon:'⚡', label:'Sinh câu hỏi nhanh', desc:'AI xử lý trong vài giây' },
-                  { icon:'🎮', label:'7 trò chơi', desc:'Đa dạng, sinh động' },
-                  { icon:'📐', label:'LaTeX & Hóa học', desc:'Hỗ trợ công thức' },
-                  { icon:'📄', label:'Xuất file Word', desc:'Tải về dùng ngay' },
-                ].map(f => (
-                  <div key={f.label} className="card card--sm" style={{ textAlign:'center', marginBottom:0 }}>
-                    <div style={{ fontSize:24, marginBottom:6 }}>{f.icon}</div>
-                    <div style={{ fontWeight:700, fontSize:13, marginBottom:3, color:'var(--text-2)' }}>{f.label}</div>
-                    <div style={{ fontSize:12, color:'var(--text-3)' }}>{f.desc}</div>
+              {/* Game Library Section */}
+              <section className="space-y-8 pb-12">
+                <div className="flex justify-between items-end">
+                  <div className="space-y-1">
+                    <span className="text-secondary font-bold tracking-widest text-sm font-label">XU HƯỚNG</span>
+                    <h2 className="font-headline text-3xl font-extrabold text-primary">Trò chơi hot nhất</h2>
                   </div>
-                ))}
-              </div>
+                  <button className="text-primary font-bold hover:underline font-label">Xem tất cả</button>
+                </div>
+                {/* Grid of Game Box Art */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                  {GAME_LIBRARY.slice(0, 4).map((g, idx) => {
+                    const bgColors = [
+                      'from-blue-400 to-indigo-500', 
+                      'from-orange-400 to-red-500', 
+                      'from-green-400 to-emerald-600', 
+                      'from-purple-400 to-pink-500'
+                    ];
+                    const imgs = [
+                      "https://lh3.googleusercontent.com/aida-public/AB6AXuBuGX0aADHvsdFGMot8-B_C_FnNP_ltq1tg_ZecXP3jZ_C1J2OqrBKeli0DEf7po0Yv_ca1MdxyMNCWR4O7n_bbemaH8Xrjl3Tw-9A_2AK7StcAt2k8Tvgu9pVSo9geQeAMpg9kbJQbpG2JTNpnVie0SHl5aFMJQf41Sa82ODYLMMXPHPwvhSPEK4b87ScUh-JEAbUXPpdZTEdnJV0_ptE1V2ebnC9K_jep-y-6qzLbeuanTIYx4Unsy4PbIQ0g4oVY4tulrqaWkeU",
+                      "https://lh3.googleusercontent.com/aida-public/AB6AXuBl15WfhyoEmweWP4Uh9O0Bci8CbJYGciP7CbModpedBr-NlrOh0XLlLeI4Xgu6Xg3B37KzEM-JRP5EtpLdwoJjH5Pua3Nd8qytna1_z_8seQR8Nookx8EOnbK_HeURILqOIPdWD5p-axdTh66bOcDul0h9oFYGD51-ANhExbaGpXGHDY_ruwx8Bfmisa7j2KzmUWUwvldVCgxWtj8virtN_FDUKzJNRv0DNy6oq4uCGTiHR2EG6g42YyjRwbK0IyMVvoQWXkWhq0A",
+                      "https://lh3.googleusercontent.com/aida-public/AB6AXuBPFldud1i7ZwyWSfPsNIUlPlcnyveBjBgi2Kgb9enF33HmsH6zEKLIcBMuRhgazDM71SXtZZZJLLINhfH5JKievik24q7Onwii-TIbTq6sgmu5xgVn15l6wPrKwQZ0q2h9lyIiHUCoB3-MHDqU4qws47jOuomCRE5NGWPHT7hk1Q5byGaPZBzZ9dU7aup6dehnygW-isvjlpgAqwQHEnMWbewfLhl42BefL_GUJNMErxW8H2K_1fzCwFL40aC-2aD63v3BzRBrFBE",
+                      "https://lh3.googleusercontent.com/aida-public/AB6AXuBsD9nhM7F5F8XpJhSU6bGBgSkTFEHfiBrXXz61fGR4E1uMZoDjQKxZEEUaBCI0mMTWkJM5JT_lgn_SUmyRdrGoIOoJLLhPxB27cBvlmggimVU_wfMpdfQLLVWH6gmx3PWWzA71vBw5nIMLh1JAk0SkKZsnB4mR9WedRT_iMHDpsS4BFkrudNg7Tg9lq4_pGEzEWPSO3ULdz-wK6s5XEYRbeEELJMdceH3j7PoBtNWTj_Yx2Sxy2m9BhELsGwb2OTGCFPGgxdfCJGQ"
+                    ];
+                    return (
+                      <div key={g.id} className="bg-surface-container-low rounded-xl overflow-hidden hover:scale-105 transition-transform cursor-pointer shadow-sm hover:shadow-xl">
+                        <div className={`aspect-square bg-gradient-to-tr ${bgColors[idx]} p-4 relative`}>
+                          <img alt="game box" className="w-full h-full object-contain" src={imgs[idx]}/>
+                          <div className="absolute top-2 right-2 bg-white/90 rounded-full px-2 py-1 flex items-center gap-1">
+                            <span className="material-symbols-outlined text-yellow-500 text-sm" style={{fontVariationSettings: "'FILL' 1"}}>star</span>
+                            <span className="text-xs font-bold text-on-surface">{(5.0 - idx * 0.1).toFixed(1)}</span>
+                          </div>
+                        </div>
+                        <div className="p-4 bg-white">
+                          <h4 className="font-headline font-bold text-on-surface truncate">{g.name}</h4>
+                          <div className="flex items-center gap-2 mt-2">
+                             <span className="text-xs font-semibold text-on-surface-variant line-clamp-1">{g.description}</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
             </motion.div>
           )}
 
@@ -1486,32 +1491,100 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
                     <span style={{ fontSize:13, fontWeight:700, color:'var(--blue)', textTransform:'uppercase', letterSpacing:.5 }}>🎮 Trò chơi tương tác online</span>
                     <div style={{ flex:1, height:1, background:'var(--border)' }} />
                   </div>
-                  <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(220px,1fr))', gap:14, marginBottom:28 }}>
+                  <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))', gap:20, marginBottom:28 }}>
                     {GAME_LIBRARY.filter(g => {
                       const activeTypes = stage === 'm1_game' ? m1QuestionTypes : [...new Set(parsedQuestions.map(q => q.type))];
                       return activeTypes.length === 0 || activeTypes.some(t => g.compatibleTypes.includes(t));
-                    }).map(g => (
-                      <div key={g.id} className="game-card">
-                        <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
+                    }).map((g, idx) => {
+                      // Different gradient combos for 3D feel
+                      const gradients = [
+                        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        'linear-gradient(135deg, #0ea5e9 0%, #0055c4 100%)',
+                        'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                        'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+                        'linear-gradient(135deg, #f472b6 0%, #ec4899 100%)',
+                        'linear-gradient(135deg, #34d399 0%, #006a33 100%)',
+                        'linear-gradient(135deg, #0f172a 0%, #dc2626 100%)',
+                        'linear-gradient(135deg, #14b8a6 0%, #0891b2 100%)',
+                      ];
+                      const shadows = [
+                        '0 10px 30px rgba(102,126,234,0.4)',
+                        '0 10px 30px rgba(0,85,196,0.4)',
+                        '0 10px 30px rgba(245,158,11,0.4)',
+                        '0 10px 30px rgba(26,26,46,0.5)',
+                        '0 10px 30px rgba(244,114,182,0.4)',
+                        '0 10px 30px rgba(52,211,153,0.4)',
+                        '0 10px 30px rgba(220,38,38,0.4)',
+                        '0 10px 30px rgba(20,184,166,0.4)',
+                      ];
+                      const bg = gradients[idx % gradients.length];
+                      const shadow = shadows[idx % shadows.length];
+                      return (
+                        <div key={g.id} style={{
+                          background: 'var(--color-surface-container-lowest)',
+                          borderRadius: '1.5rem',
+                          overflow: 'hidden',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          boxShadow: '0 4px 20px rgba(0,85,196,0.06)',
+                          transition: 'transform 0.2s, box-shadow 0.2s',
+                          cursor: 'pointer',
+                        }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = shadow; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 20px rgba(0,85,196,0.06)'; }}>
+                          {/* Top: Large 3D icon banner - half the card */}
                           <div style={{
-                            width:44, height:44, borderRadius:10, display:'flex', alignItems:'center', justifyContent:'center',
-                            fontSize:22, background:'var(--blue-light)', flexShrink:0
-                          }}>{g.emoji}</div>
-                          <div>
-                            <div style={{ fontWeight:700, fontSize:14, color:'var(--text)' }}>{g.name}</div>
+                            background: bg,
+                            minHeight: 160,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '20px 24px',
+                            position: 'relative',
+                            overflow: 'hidden',
+                          }}>
+                            {/* Decorative glare blob */}
+                            <div style={{ position:'absolute', top:-30, right:-30, width:100, height:100, background:'rgba(255,255,255,0.12)', borderRadius:'50%', filter:'blur(10px)' }} />
+                            <div style={{ position:'absolute', bottom:-20, left:-10, width:70, height:70, background:'rgba(255,255,255,0.08)', borderRadius:'50%', filter:'blur(8px)' }} />
+                            {/* Giant 3D emoji */}
+                            <div style={{
+                              fontSize: 90,
+                              lineHeight: 1,
+                              filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.35)) drop-shadow(0 2px 4px rgba(0,0,0,0.25))',
+                              transform: 'rotate(-8deg) scale(1.05)',
+                              zIndex: 2,
+                              userSelect: 'none',
+                            }}>{g.emoji}</div>
+                            {/* Right: game name tag floating */}
+                            <div style={{ textAlign:'right', zIndex: 2 }}>
+                              <div style={{
+                                background: 'rgba(255,255,255,0.2)',
+                                backdropFilter: 'blur(8px)',
+                                borderRadius: '1rem',
+                                padding: '8px 14px',
+                                display: 'inline-block',
+                              }}>
+                                <div style={{ fontSize:13, fontWeight:800, color:'rgba(255,255,255,0.95)', fontFamily:'var(--font-headline)', lineHeight:1.3 }}>{g.name}</div>
+                              </div>
+                            </div>
+                          </div>
+                          {/* Bottom: Info + Button */}
+                          <div style={{ padding:'16px 20px', display:'flex', flexDirection:'column', gap:10, flex:1 }}>
+                            <p style={{ fontSize:13, color:'var(--text-3)', lineHeight:1.6, margin:0 }}>{g.description}</p>
+                            <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
+                              {g.compatibleTypes.map(t => <span key={t} className="badge badge-slate">{t}</span>)}
+                            </div>
+                            <button className="btn btn-primary btn--sm" style={{ width:'100%', justifyContent:'center', marginTop:4 }}
+                              onClick={() => setSelectedGameId(g.id)}>
+                              <span className="material-symbols-outlined" style={{fontSize:16}}>sports_esports</span>
+                              Chọn trò chơi
+                            </button>
                           </div>
                         </div>
-                        <p style={{ fontSize:12, color:'var(--text-3)', lineHeight:1.5, marginBottom:10 }}>{g.description}</p>
-                        <div style={{ display:'flex', flexWrap:'wrap', gap:4, marginBottom:12 }}>
-                          {g.compatibleTypes.map(t => <span key={t} className="badge badge-slate">{t}</span>)}
-                        </div>
-                        <button className="btn btn-primary btn--sm" style={{ width:'100%', justifyContent:'center' }}
-                          onClick={() => setSelectedGameId(g.id)}>
-                          Chọn trò chơi
-                        </button>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
+
                 </div>
 
               ) : (
@@ -1587,6 +1660,12 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
                   )}
                   {selectedGameId === 'cap_doi' && (
                     <CapDoiHoanHaoGame
+                      initialQuestions={parsedQuestions}
+                      onBack={() => setSelectedGameId(null)}
+                    />
+                  )}
+                  {selectedGameId === 'thap_tri_tue' && (
+                    <ThapTriTueGame
                       initialQuestions={parsedQuestions}
                       onBack={() => setSelectedGameId(null)}
                     />
@@ -1751,10 +1830,29 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
         </AnimatePresence>
       </main>
 
-      {/* Footer */}
-      <footer style={{ maxWidth:1400, margin:'0 auto', padding:'16px 16px', borderTop:'1px solid var(--border)', textAlign:'center' }}>
+      {/* Footer / Bottom Navigation */}
+      <footer style={{ maxWidth:1400, margin:'0 auto', padding:'16px 16px', borderTop:'1px solid var(--border)', textAlign:'center', paddingBottom: '100px' }}>
         <p style={{ fontSize:12, color:'var(--text-3)' }}>© 2025 Trợ lí tạo trò chơi học tập · Powered by Gemini AI</p>
       </footer>
+      
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 w-full z-[100] flex justify-around items-center px-4 py-3 bg-white/70 backdrop-blur-lg shadow-2xl rounded-t-xl pb-safe">
+        {/* Home (Active) */}
+        <button className="flex flex-col items-center justify-center bg-gradient-to-b from-primary to-primary-container text-white rounded-full p-4 scale-110 -translate-y-2 shadow-[0_10px_30px_rgba(0,85,196,0.3)] transition-all duration-300 ease-out border-none" onClick={reset}>
+          <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>home</span>
+          <span className="font-label font-bold text-[10px] mt-1">Home</span>
+        </button>
+        {/* Games */}
+        <button className="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container-low rounded-full transition-transform active:scale-90 border-none bg-transparent" onClick={() => setStage('m1_type')}>
+          <span className="material-symbols-outlined">sports_esports</span>
+          <span className="font-label font-bold text-[10px] mt-1">Games</span>
+        </button>
+        {/* Settings */}
+        <button className="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container-low rounded-full transition-transform active:scale-90 border-none bg-transparent" onClick={() => setIsSettingsOpen(true)}>
+          <span className="material-symbols-outlined">settings</span>
+          <span className="font-label font-bold text-[10px] mt-1">Settings</span>
+        </button>
+      </nav>
     </div>
   );
 }
