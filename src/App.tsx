@@ -633,19 +633,72 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
     setM1QuestionTypes([]); setM1RawText('');
   };
 
-  const processLatexToMathML = (text: string) => {
+  const processLatexForWord = (text: string): string => {
     if (!text) return '';
-    // Xử lý các khối công thức dạng $...$ hoặc $$...$$
-    return text.replace(/\$\$(.*?)\$\$|\$(.*?)\$/g, (match, g1, g2) => {
-      const math = g1 || g2;
-      try {
-        // Render sang MathML thuần túy để MS Word nhận dạng nhúng Equation (Equation Native)
-        return katex.renderToString(math, { output: 'mathml', throwOnError: false });
-      } catch(e) {
-        return match;
-      }
+
+    // Unicode superscript/subscript digit maps
+    const supDigits: Record<string, string> = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','+':'⁺','-':'⁻','n':'ⁿ','a':'ᵃ','b':'ᵇ','c':'ᶜ','d':'ᵈ','e':'ᵉ','i':'ⁱ','j':'ʲ','k':'ᵏ','m':'ᵐ','o':'ᵒ','p':'ᵖ','r':'ʳ','s':'ˢ','t':'ᵗ','u':'ᵘ','v':'ᵛ','x':'ˣ' };
+    const subDigits: Record<string, string> = { '0':'₀','1':'₁','2':'₂','3':'₃','4':'₄','5':'₅','6':'₆','7':'₇','8':'₈','9':'₉','+':'₊','-':'₋','a':'ₐ','e':'ₑ','o':'ₒ','x':'ₓ','n':'ₙ','i':'ᵢ' };
+
+    const toSup = (s: string) => s.split('').map(c => supDigits[c] ?? c).join('');
+    const toSub = (s: string) => s.split('').map(c => subDigits[c] ?? c).join('');
+
+    // Greek and common math symbols
+    const greekMap: Record<string, string> = {
+      'alpha':'α','beta':'β','gamma':'γ','delta':'δ','epsilon':'ε','zeta':'ζ','eta':'η','theta':'θ',
+      'iota':'ι','kappa':'κ','lambda':'λ','mu':'μ','nu':'ν','xi':'ξ','pi':'π','rho':'ρ',
+      'sigma':'σ','tau':'τ','upsilon':'υ','phi':'φ','chi':'χ','psi':'ψ','omega':'ω',
+      'Alpha':'Α','Beta':'Β','Gamma':'Γ','Delta':'Δ','Theta':'Θ','Lambda':'Λ','Pi':'Π',
+      'Sigma':'Σ','Phi':'Φ','Psi':'Ψ','Omega':'Ω',
+      'pm':'±','times':'×','div':'÷','leq':'≤','geq':'≥','neq':'≠','approx':'≈',
+      'infty':'∞','cdot':'·','rightarrow':'→','leftarrow':'←','Rightarrow':'⇒',
+      'sqrt':'√','sum':'∑','prod':'∏','int':'∫','partial':'∂','nabla':'∇',
+      'AA':'Å', 'degree':'°',
+    };
+
+    const convertLatex = (math: string): string => {
+      let result = math.trim();
+
+      // Remove display mode markers
+      result = result.replace(/\\displaystyle\s*/g, '');
+
+      // Replace \text{...} → content as-is
+      result = result.replace(/\\text\{([^}]*)\}/g, '$1');
+
+      // Replace \mathrm{...}, \mathbf{...}, \mathit{...} → content
+      result = result.replace(/\\math(?:rm|bf|it|sf|tt|cal)\{([^}]*)\}/g, '$1');
+
+      // Replace \frac{a}{b} → a⁄b
+      result = result.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1⁄$2)');
+
+      // Replace \sqrt{x} → √(x)
+      result = result.replace(/\\sqrt\{([^}]+)\}/g, '√($1)');
+
+      // Replace superscripts: ^{...} → unicode sup chars, ^x → single sup
+      result = result.replace(/\^\{([^}]+)\}/g, (_, g) => toSup(g));
+      result = result.replace(/\^([A-Za-z0-9+\-])/g, (_, g) => toSup(g));
+
+      // Replace subscripts: _{...} → unicode sub chars, _x → single sub
+      result = result.replace(/_\{([^}]+)\}/g, (_, g) => toSub(g));
+      result = result.replace(/_([A-Za-z0-9+\-])/g, (_, g) => toSub(g));
+
+      // Replace known \commands
+      result = result.replace(/\\([A-Za-z]+)/g, (_, cmd) => greekMap[cmd] ?? cmd);
+
+      // Cleanup braces
+      result = result.replace(/[{}]/g, '');
+
+      return result;
+    };
+
+    // Replace $$ ... $$ (display) and $ ... $ (inline)
+    return text.replace(/\$\$([\s\S]*?)\$\$|\$([^$\n]+?)\$/g, (match, g1, g2) => {
+      const inner = (g1 ?? g2 ?? '').trim();
+      if (!inner) return match;
+      return convertLatex(inner);
     });
   };
+
 
   const downloadAsWord = () => {
     if (!parsedQuestions || parsedQuestions.length === 0) {
@@ -670,7 +723,7 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
     `;
 
     parsedQuestions.forEach((q, idx) => {
-      const qContent = processLatexToMathML(q.content);
+      const qContent = processLatexForWord(q.content);
       html += `<p><span class="q-blue">Câu ${idx + 1}.</span> ${qContent}</p>`;
       
       if (q.options && q.options.length > 0) {
@@ -678,7 +731,7 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
         html += `<table width="100%" style="margin-bottom: 8pt; border-collapse: collapse; border: none;"><tr>`;
         q.options.forEach((opt, oIdx) => {
           const letter = ['A', 'B', 'C', 'D'][oIdx] || '';
-          let optHtml = `<span class="opt-letter">${letter}.</span> ${processLatexToMathML(opt)}`;
+          let optHtml = `<span class="opt-letter">${letter}.</span> ${processLatexForWord(opt)}`;
           if (q.correctAnswer === letter) {
             optHtml = `<u>${optHtml}</u>`;
           }
@@ -687,7 +740,7 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
         });
         html += `</tr></table>`;
       } else if (q.correctAnswer) {
-         html += `<p><b><u>Đáp án:</u></b> ${processLatexToMathML(q.correctAnswer)}</p>`;
+         html += `<p><b><u>Đáp án:</u></b> ${processLatexForWord(q.correctAnswer)}</p>`;
       }
     });
 
@@ -720,7 +773,7 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
   };
 
   // ─────────────── HELPERS ───────────────
-  const m2Steps = ['Nhập bài học', 'Phân tích', 'Nhu cầu', 'Sị câu hỏi', 'Chọn game'];
+  const m2Steps = ['Nhập bài học', 'Phân tích', 'Nhu cầu', 'Sửa câu hỏi', 'Chọn game'];
   const m2StepIdx: Record<AppStage, number> = {
     home: -1, m1_type: -1, m1_input: -1, m1_edit: -1, m1_game: -1,
     m2_analyze: 0, m2_needs: 2, m2_questions: 3, m2_game: 4,
@@ -795,53 +848,94 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
           {/* ═══ HOME ═══ */}
           {stage === 'home' && (
             <motion.div key="home" initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }} className="space-y-12 max-w-5xl mx-auto w-full">
-              {/* Hero Section */}
-              <section className="relative bg-gradient-to-br from-primary-container to-primary text-on-primary rounded-xl p-8 overflow-hidden flex flex-col md:flex-row items-center gap-8 min-h-[400px]">
-                <div className="z-10 text-center md:text-left md:w-3/5 space-y-6">
-                  <h2 className="font-headline text-4xl md:text-5xl font-extrabold leading-tight">Chinh phục tri thức qua trò chơi!</h2>
-                  <p className="text-lg opacity-90 font-medium font-body">Học tập chưa bao giờ vui đến thế cùng người bạn robot thông minh.</p>
-                  <button className="bg-secondary text-on-secondary-fixed font-headline font-bold text-xl px-10 py-5 rounded-xl bubbly-shadow hover:scale-105 transition-all active:scale-95 inline-block"
-                     onClick={() => { if (!apiKey) { setIsSettingsOpen(true); setIsApiKeyRequired(true); } else setStage('m2_analyze'); }}>
-                      Bắt đầu ngay
-                  </button>
-                </div>
-                <div className="relative md:w-2/5 flex justify-center items-center">
-                  <div className="absolute w-64 h-64 bg-white/20 rounded-full blur-3xl"></div>
-                  <img alt="friendly robot mascot" className="w-full max-w-[300px] z-10 drop-shadow-2xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDx7oooeNSK1o3faWc94sY9mdm9aBQwrKEMpY76Ddq3s8-oQ64EMeREZjJ-z3_2dFarh4rV5g1o2OimUsY12bExLWX2NJuwCWVsBAVjxoASsYnV6nequuzlvUKWwuiAat3PJuIH8iOp4iusp0hArmIbv7mfh5rktskgt7JJiSzm_8APCchfjulBapLIMBAvLAT_HF3y7HbYZv-_G7nrH7mVbwutEDemxhDA0vfzDitoJEC8nOazl_Rd1s5JgjviwYTmf-A1Ry4iTcM"/>
-                </div>
+              {/* Combined Hero + Action Cards in one frame */}
+              <section className="relative bg-gradient-to-br from-primary-container to-primary text-on-primary rounded-2xl overflow-hidden shadow-xl">
                 {/* Decorative blobs */}
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-tertiary-container/30 rounded-full blur-2xl"></div>
-                <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-secondary-container/20 rounded-full blur-2xl"></div>
-              </section>
+                <div className="absolute -top-10 -right-10 w-40 h-40 bg-tertiary-container/30 rounded-full blur-2xl pointer-events-none" />
+                <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-secondary-container/20 rounded-full blur-2xl pointer-events-none" />
 
-              {/* Main Actions: Bento-style asymmetrical cards */}
-              <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Action Card 1: Tạo trò chơi từ bộ hỏi có sẵn (m1_type) */}
-                <div onClick={() => setStage('m1_type')} className="group bg-surface-container-lowest rounded-xl p-8 flex flex-col items-center text-center space-y-4 hover:shadow-2xl transition-all duration-300 border-b-8 border-primary-fixed cursor-pointer relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-full h-2 bg-primary"></div>
-                  <div className="w-32 h-32 bg-primary-container/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <img alt="game mascot" className="w-24 h-24" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpp1vHqRfnLazWrQG9rlQmQtXCl8Y3kYF1e9q42pxWRdppCQ83fJJpM8aGMAzFO-GH7CgUZE4dO2FD-rUCBihAb997Nr_EpmeIqsqBmxKLfzDCRp24vg-tcw3X0YhJyw_sYp-OQiwyO-9m7ZBayduTqgaxSvjRwCVk7FsBpp9SoIHasMGqy97_jDFQ8uSRnqAKxUWp2DfffFBRPL5tcTX4LWGhgWJAx4P-xQFDASXP8bSfEFznpDz_5CeKFj0Q4FKTC5MeHzmC-BI"/>
+                {/* Hero row: text + small robot */}
+                <div className="relative z-10 flex flex-row items-center justify-between gap-4 px-8 pt-8 pb-4">
+                  <div className="flex-1 space-y-3">
+                    <h2 className="font-headline text-3xl md:text-4xl font-extrabold leading-tight">Chinh phục tri thức<br/>qua trò chơi!</h2>
+                    <p className="text-base opacity-90 font-medium font-body">Học tập chưa bao giờ vui đến thế cùng người bạn robot thông minh.</p>
                   </div>
-                  <div>
-                    <h3 className="font-headline text-2xl font-extrabold text-primary">Tạo trò chơi</h3>
-                    <p className="text-on-surface-variant font-medium mt-2 font-body">Biến bài học thành cuộc phiêu lưu kỳ thú</p>
+                  {/* Smaller robot image */}
+                  <div className="relative flex-shrink-0 flex items-center justify-center">
+                    <div className="absolute w-28 h-28 bg-white/20 rounded-full blur-2xl" />
+                    <img
+                      alt="friendly robot mascot"
+                      className="w-28 md:w-36 z-10 drop-shadow-2xl"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDx7oooeNSK1o3faWc94sY9mdm9aBQwrKEMpY76Ddq3s8-oQ64EMeREZjJ-z3_2dFarh4rV5g1o2OimUsY12bExLWX2NJuwCWVsBAVjxoASsYnV6nequuzlvUKWwuiAat3PJuIH8iOp4iusp0hArmIbv7mfh5rktskgt7JJiSzm_8APCchfjulBapLIMBAvLAT_HF3y7HbYZv-_G7nrH7mVbwutEDemxhDA0vfzDitoJEC8nOazl_Rd1s5JgjviwYTmf-A1Ry4iTcM"
+                    />
                   </div>
-                  <span className="material-symbols-outlined text-4xl text-primary font-bold">add_circle</span>
                 </div>
 
-                {/* Action Card 2: AI tạo câu hỏi từ bài học (m2_analyze) */}
-                <div onClick={() => { if (!apiKey) { setIsSettingsOpen(true); setIsApiKeyRequired(true); } else setStage('m2_analyze'); }} className="group bg-surface-container-lowest rounded-xl p-8 flex flex-col items-center text-center space-y-4 hover:shadow-2xl transition-all duration-300 border-b-8 border-tertiary-fixed cursor-pointer relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-full h-2 bg-tertiary"></div>
-                  <div className="w-32 h-32 bg-tertiary-container/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <img alt="AI mascot" className="w-24 h-24" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLAWUo7m24evPHHWO9qAHFbPleP_8DiagfcwiEq-oxB4YYZ5BVr8xyxy2x1fJmOOQallFzgP09uL1ZMaUmpNqQPbtnZUnVG3CM3tM0bN4U23fmTICpZiQeqtgDRyZ4EW_nYhV7qSDXKfomxqGQ9rKikVbxcJSZWu5KCOMSfi2HS6ejzAnBCKtgo8zibdHnLyW3dN3s7MO4Tsuz0Lu9IZ47IgJ2VYoFIwKGUP9FBiJdOLSv3N9BRc0q36RH39mCQIrPeHcuEokS49E"/>
+                {/* Divider label */}
+                <div className="relative z-10 px-8 pb-2">
+                  <span className="text-white/60 text-xs font-bold uppercase tracking-widest">Chọn chế độ</span>
+                </div>
+
+                {/* Two mode cards - inside same frame */}
+                <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-4 px-8 pb-8">
+                  {/* Mode 1: Tạo trò chơi */}
+                  <div
+                    onClick={() => setStage('m1_type')}
+                    className="group bg-white/15 backdrop-blur-sm hover:bg-white/25 rounded-2xl p-5 cursor-pointer transition-all duration-300 border border-white/20 hover:border-white/40 hover:shadow-xl"
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
+                        <img alt="game mascot" className="w-8 h-8 rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpp1vHqRfnLazWrQG9rlQmQtXCl8Y3kYF1e9q42pxWRdppCQ83fJJpM8aGMAzFO-GH7CgUZE4dO2FD-rUCBihAb997Nr_EpmeIqsqBmxKLfzDCRp24vg-tcw3X0YhJyw_sYp-OQiwyO-9m7ZBayduTqgaxSvjRwCVk7FsBpp9SoIHasMGqy97_jDFQ8uSRnqAKxUWp2DfffFBRPL5tcTX4LWGhgWJAx4P-xQFDASXP8bSfEFznpDz_5CeKFj0Q4FKTC5MeHzmC-BI"/>
+                      </div>
+                      <div>
+                        <h3 className="font-headline text-lg font-extrabold text-white">Tạo trò chơi</h3>
+                        <p className="text-white/70 text-xs font-medium">Dùng khi đã có bộ câu hỏi</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      {[
+                        { icon: 'checklist', text: 'Chọn dạng câu hỏi' },
+                        { icon: 'upload_file', text: 'Dán text hoặc tải Word / PDF' },
+                        { icon: 'sports_esports', text: 'Chọn trò chơi & chơi ngay' },
+                      ].map(f => (
+                        <div key={f.icon} className="flex items-center gap-2 bg-white/10 rounded-xl px-2.5 py-1.5">
+                          <span className="material-symbols-outlined text-white/80 text-sm">{f.icon}</span>
+                          <span className="text-xs font-semibold text-white/90">{f.text}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-headline text-2xl font-extrabold text-tertiary">AI tạo câu hỏi</h3>
-                    <p className="text-on-surface-variant font-medium mt-2 font-body">Tạo bộ câu hỏi thông minh trong tích tắc</p>
+
+                  {/* Mode 2: AI tạo câu hỏi */}
+                  <div
+                    onClick={() => { if (!apiKey) { setIsSettingsOpen(true); setIsApiKeyRequired(true); } else setStage('m2_analyze'); }}
+                    className="group bg-white/15 backdrop-blur-sm hover:bg-white/25 rounded-2xl p-5 cursor-pointer transition-all duration-300 border border-white/20 hover:border-white/40 hover:shadow-xl"
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
+                        <img alt="AI mascot" className="w-8 h-8 rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLAWUo7m24evPHHWO9qAHFbPleP_8DiagfcwiEq-oxB4YYZ5BVr8xyxy2x1fJmOOQallFzgP09uL1ZMaUmpNqQPbtnZUnVG3CM3tM0bN4U23fmTICpZiQeqtgDRyZ4EW_nYhV7qSDXKfomxqGQ9rKikVbxcJSZWu5KCOMSfi2HS6ejzAnBCKtgo8zibdHnLyW3dN3s7MO4Tsuz0Lu9IZ47IgJ2VYoFIwKGUP9FBiJdOLSv3N9BRc0q36RH39mCQIrPeHcuEokS49E"/>
+                      </div>
+                      <div>
+                        <h3 className="font-headline text-lg font-extrabold text-white">AI tạo câu hỏi</h3>
+                        <p className="text-white/70 text-xs font-medium">Tạo đề thông minh trong tích tắc</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      {[
+                        { icon: 'add_photo_alternate', text: 'Tải ảnh sách / nhập văn bản' },
+                        { icon: 'auto_awesome', text: 'AI phân tích & sinh câu hỏi tự động' },
+                        { icon: 'download', text: 'Tải về bản Word ngay sau khi tạo' },
+                      ].map(f => (
+                        <div key={f.icon} className="flex items-center gap-2 bg-white/10 rounded-xl px-2.5 py-1.5">
+                          <span className="material-symbols-outlined text-white/80 text-sm">{f.icon}</span>
+                          <span className="text-xs font-semibold text-white/90">{f.text}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <span className="material-symbols-outlined text-4xl text-tertiary font-bold">auto_awesome</span>
                 </div>
               </section>
+
 
               {/* Game Library Section */}
               <section className="space-y-8 pb-12">
