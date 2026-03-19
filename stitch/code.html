@@ -3,9 +3,8 @@
 <html lang="vi"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>SmartEdu Play - Home</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
@@ -14,57 +13,57 @@
         theme: {
           extend: {
             colors: {
-              "tertiary-fixed-dim": "#24f07e",
-              "error-dim": "#9f0519",
-              "surface-tint": "#0055c4",
-              "surface-container-high": "#dde3e8",
-              "surface-container": "#e3e9ee",
-              "on-surface-variant": "#575c60",
-              "primary-fixed-dim": "#5a90ff",
-              "primary-dim": "#004aad",
-              "surface-container-lowest": "#ffffff",
-              "on-primary-fixed": "#000000",
-              "inverse-on-surface": "#999da1",
-              "secondary-container": "#fdd400",
-              "surface": "#f3f7fb",
-              "on-tertiary-fixed": "#004820",
-              "on-tertiary": "#cdffd3",
-              "tertiary-container": "#3fff8b",
               "surface-variant": "#d7dee3",
-              "surface-bright": "#f3f7fb",
-              "on-secondary-fixed-variant": "#645300",
-              "outline": "#73777b",
-              "on-secondary-container": "#594a00",
-              "surface-container-low": "#ecf1f6",
-              "tertiary-fixed": "#3fff8b",
-              "primary-container": "#739eff",
               "on-secondary": "#fff2ce",
-              "error": "#b31b25",
-              "surface-container-highest": "#d7dee3",
-              "error-container": "#fb5151",
-              "secondary": "#6d5a00",
-              "on-error-container": "#570008",
-              "outline-variant": "#a9aeb1",
-              "inverse-surface": "#0a0f12",
-              "on-primary": "#f0f2ff",
-              "secondary-fixed": "#fdd400",
-              "surface-dim": "#ced5db",
-              "primary": "#0055c4",
-              "on-primary-fixed-variant": "#002966",
-              "secondary-fixed-dim": "#edc600",
-              "on-tertiary-container": "#005d2c",
-              "on-background": "#2a2f32",
-              "inverse-primary": "#558dff",
-              "on-error": "#ffefee",
-              "background": "#f3f7fb",
-              "on-primary-container": "#002053",
+              "tertiary-fixed": "#3fff8b",
+              "surface-container-lowest": "#ffffff",
               "primary-fixed": "#739eff",
-              "on-tertiary-fixed-variant": "#006832",
-              "secondary-dim": "#5f4e00",
+              "surface-dim": "#ced5db",
+              "on-primary-fixed-variant": "#002966",
               "tertiary-dim": "#005c2b",
-              "on-surface": "#2a2f32",
+              "primary-container": "#739eff",
+              "primary": "#0055c4",
+              "error-dim": "#9f0519",
+              "on-error": "#ffefee",
+              "secondary-fixed": "#fdd400",
+              "on-tertiary": "#cdffd3",
+              "inverse-surface": "#0a0f12",
+              "on-secondary-fixed-variant": "#645300",
+              "secondary-dim": "#5f4e00",
+              "secondary-fixed-dim": "#edc600",
+              "secondary": "#6d5a00",
+              "background": "#f3f7fb",
+              "secondary-container": "#fdd400",
+              "on-tertiary-fixed-variant": "#006832",
+              "primary-fixed-dim": "#5a90ff",
+              "surface-tint": "#0055c4",
+              "on-tertiary-container": "#005d2c",
               "tertiary": "#006a33",
-              "on-secondary-fixed": "#433700"
+              "on-secondary-container": "#594a00",
+              "surface-bright": "#f3f7fb",
+              "surface": "#f3f7fb",
+              "outline-variant": "#a9aeb1",
+              "on-primary-fixed": "#000000",
+              "on-primary": "#f0f2ff",
+              "on-tertiary-fixed": "#004820",
+              "outline": "#73777b",
+              "inverse-primary": "#558dff",
+              "surface-container": "#e3e9ee",
+              "tertiary-container": "#3fff8b",
+              "surface-container-high": "#dde3e8",
+              "on-secondary-fixed": "#433700",
+              "primary-dim": "#004aad",
+              "on-surface-variant": "#575c60",
+              "on-background": "#2a2f32",
+              "error": "#b31b25",
+              "inverse-on-surface": "#999da1",
+              "surface-container-highest": "#d7dee3",
+              "on-surface": "#2a2f32",
+              "surface-container-low": "#ecf1f6",
+              "on-error-container": "#570008",
+              "error-container": "#fb5151",
+              "on-primary-container": "#002053",
+              "tertiary-fixed-dim": "#24f07e"
             },
             fontFamily: {
               "headline": ["Plus Jakarta Sans"],
@@ -77,16 +76,25 @@
       }
     </script>
 <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .bubbly-shadow {
-            box-shadow: 0 10px 30px rgba(0, 85, 196, 0.1), inset 0 -4px 0 rgba(0,0,0,0.1);
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(20px);
-        }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .bubbly-shadow {
+        box-shadow: 0 20px 40px rgba(0, 85, 196, 0.08);
+      }
+      .inner-3d-highlight {
+        box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.4);
+      }
+      ::-webkit-scrollbar {
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #ced5db;
+        border-radius: 10px;
+      }
     </style>
 <style>
     body {
@@ -94,167 +102,216 @@
     }
   </style>
   </head>
-<body class="bg-surface font-body text-on-surface overflow-x-hidden pb-32">
+<body class="bg-background text-on-background font-body selection:bg-primary-container selection:text-on-primary-container">
 <!-- TopAppBar -->
-<header class="sticky top-0 z-50 bg-[#f3f7fb] dark:bg-slate-900 shadow-[0_10px_30px_rgba(0,85,196,0.05)] flex justify-between items-center w-full px-6 py-4">
+<nav class="bg-[#f3f7fb] dark:bg-slate-900 sticky top-0 z-50 shadow-[0_10px_30px_rgba(0,85,196,0.05)] no-border">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-screen-2xl mx-auto">
 <div class="flex items-center gap-3">
-<div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center overflow-hidden hover:scale-105 transition-transform active:scale-95 duration-200">
-<img alt="friendly mascot character" class="w-full h-full object-cover" data-alt="A cute friendly robot mascot smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmSJiKl98tZVAYx7gkYOpRphmxgZYcAPnF1fDMF1Fs7TQkYXkT6pHEnuQkBuAEwsX7Dm8zbjm3kero3MYDxmIRkLbRPTVKCsv5jX37c0EShmANz5NqiegbtKb9zWOeUdrTEqlJ-54EXf3NdB0Sc9xv_Lq1DNPmul5AzaqWx1BOZu9tkU2w4VwouYs6M5lWZi_4GrMspVjGR57BPuzcG7GQrQHBmAZL_Qtyx01p9gl8i1EBm0MkE9dzC6dkAuzQaDW4F-xyqLX0kPU"/>
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden hover:scale-105 transition-transform duration-200">
+<img class="w-full h-full object-cover" data-alt="Friendly mascot robot avatar icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXpcORM3UjKbnm55_6VVH0rYeHFXc1cIY88VC7ALzaieZlAZq7RhFGXx12uPOGIZUWcY_IkB-uCb8yti2CV3Bm2M5OCPGCiOdRarbGN5IwmEZ_MepN7NxJtmbLf3y5My7DquMM4CgwTNh4AyJ-1qiHiA5rVECc-TxJtYTUo2irYcsy_C5ujOPoLgbxjA2czU2SHQuP_XiL1Ns1YGlrgAW-_KCZucE55QLUCo5_6YX4gCqVR-fEEWDmpdEEsxfbLyJrpIF6b5-3Cts"/>
 </div>
-<h1 class="font-headline font-black text-2xl text-[#0055c4] tracking-tight">SmartEdu Play</h1>
+<span class="text-2xl font-black text-blue-700 dark:text-blue-400 italic font-['Plus_Jakarta_Sans']">EduPlay</span>
 </div>
-<button class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-[#0055c4] hover:scale-105 transition-transform active:scale-95 duration-200">
-<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-blue-700 dark:text-blue-300 font-['Plus_Jakarta_Sans'] font-bold text-lg hover:scale-105 transition-transform duration-200" href="#">Home</a>
+<a class="text-slate-500 dark:text-slate-400 font-['Plus_Jakarta_Sans'] font-bold text-lg hover:scale-105 transition-transform duration-200" href="#">Games</a>
+<a class="text-slate-500 dark:text-slate-400 font-['Plus_Jakarta_Sans'] font-bold text-lg hover:scale-105 transition-transform duration-200" href="#">Progress</a>
+<a class="text-slate-500 dark:text-slate-400 font-['Plus_Jakarta_Sans'] font-bold text-lg hover:scale-105 transition-transform duration-200" href="#">Settings</a>
+</div>
+<button class="text-blue-600 dark:text-blue-400 hover:scale-105 transition-transform duration-200">
+<span class="material-symbols-outlined text-2xl">notifications</span>
 </button>
-</header>
-<main class="max-w-5xl mx-auto px-6 space-y-12 pt-8">
-<!-- Hero Section -->
-<section class="relative bg-gradient-to-br from-primary-container to-primary text-on-primary rounded-xl p-8 overflow-hidden flex flex-col md:flex-row items-center gap-8 min-h-[400px]">
-<div class="z-10 text-center md:text-left md:w-3/5 space-y-6">
-<h2 class="font-headline text-4xl md:text-5xl font-extrabold leading-tight">Chinh phục tri thức qua trò chơi!</h2>
-<p class="text-lg opacity-90 font-medium">Học tập chưa bao giờ vui đến thế cùng người bạn robot thông minh.</p>
-<button class="bg-secondary text-on-secondary-fixed font-headline font-bold text-xl px-10 py-5 rounded-xl bubbly-shadow hover:scale-105 transition-all active:scale-95 inline-block">
-                    Bắt đầu ngay
-                </button>
 </div>
-<div class="relative md:w-2/5 flex justify-center items-center">
-<div class="absolute w-64 h-64 bg-white/20 rounded-full blur-3xl"></div>
-<img alt="friendly robot mascot" class="w-full max-w-[300px] z-10 drop-shadow-2xl" data-alt="A large friendly blue robot waving with a happy face" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDx7oooeNSK1o3faWc94sY9mdm9aBQwrKEMpY76Ddq3s8-oQ64EMeREZjJ-z3_2dFarh4rV5g1o2OimUsY12bExLWX2NJuwCWVsBAVjxoASsYnV6nequuzlvUKWwuiAat3PJuIH8iOp4iusp0hArmIbv7mfh5rktskgt7JJiSzm_8APCchfjulBapLIMBAvLAT_HF3y7HbYZv-_G7nrH7mVbwutEDemxhDA0vfzDitoJEC8nOazl_Rd1s5JgjviwYTmf-A1Ry4iTcM"/>
+</nav>
+<main class="max-w-screen-2xl mx-auto px-6 pb-32 pt-6">
+<!-- Hero Banner -->
+<section class="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary to-secondary-fixed p-8 md:p-12 mb-10 bubbly-shadow">
+<div class="relative z-10 grid md:grid-cols-2 gap-8 items-center">
+<div class="space-y-6">
+<h1 class="font-headline font-extrabold text-4xl md:text-6xl text-white leading-tight tracking-tight">
+                        Chinh phục tri thức <br/>qua trò chơi!
+                    </h1>
+<p class="text-on-primary text-lg md:text-xl font-medium opacity-90 max-w-md">
+                        Biến bài học khô khan thành những cuộc phiêu lưu kỳ thú cùng EduPlay.
+                    </p>
+<button class="bg-surface-container-lowest text-primary px-8 py-4 rounded-full font-headline font-bold text-lg inner-3d-highlight hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-2 w-fit">
+                        Khám phá ngay
+                        <span class="material-symbols-outlined">rocket_launch</span>
+</button>
 </div>
-<!-- Decorative blobs -->
-<div class="absolute -top-10 -right-10 w-40 h-40 bg-tertiary-container/30 rounded-full blur-2xl"></div>
-<div class="absolute -bottom-10 -left-10 w-48 h-48 bg-secondary-container/20 rounded-full blur-2xl"></div>
+<div class="flex justify-center md:justify-end">
+<img class="w-64 md:w-96 drop-shadow-2xl" data-alt="Friendly glowing 3D robot mascot floating in air" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYHPsRed567s8fbHJzs3oTk7YIWMu4XaTX4PdW63M-P1b8O1SL1S6BfY6VS0jiYpuYcAC0DshVeehJeFzbVoHln4k4te0rFyi9LCdL1tLZapZUClOvQ916J8_L5_fU7y1VNqHD1QtLxmJrtNKLDh2HW2B5-xxf7Pkf5ky_gFTWiLTbcxEUGWZ9IQHbx_MKdQRLj_VzLtjba3puJ1Rulz0Aw-4nHPDreAAO2Vt3pxDH5AobmuPiCC3Ndi84fIB1ol1qjfTDi4CJu88"/>
+</div>
+</div>
+<!-- Decorative Elements -->
+<div class="absolute top-[-10%] right-[-10%] w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+<div class="absolute bottom-[-10%] left-[-5%] w-48 h-48 bg-secondary/20 rounded-full blur-2xl"></div>
 </section>
-<!-- Main Actions: Bento-style asymmetrical cards -->
-<section class="grid grid-cols-1 md:grid-cols-2 gap-8">
-<!-- Action Card 1 -->
-<div class="group bg-surface-container-lowest rounded-xl p-8 flex flex-col items-center text-center space-y-4 hover:shadow-2xl transition-all duration-300 border-b-8 border-primary-fixed cursor-pointer relative overflow-hidden">
-<div class="absolute top-0 left-0 w-full h-2 bg-primary"></div>
-<div class="w-32 h-32 bg-primary-container/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-<img alt="game mascot" class="w-24 h-24" data-alt="A cute game controller character with eyes and a smile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpp1vHqRfnLazWrQG9rlQmQtXCl8Y3kYF1e9q42pxWRdppCQ83fJJpM8aGMAzFO-GH7CgUZE4dO2FD-rUCBihAb997Nr_EpmeIqsqBmxKLfzDCRp24vg-tcw3X0YhJyw_sYp-OQiwyO-9m7ZBayduTqgaxSvjRwCVk7FsBpp9SoIHasMGqy97_jDFQ8uSRnqAKxUWp2DfffFBRPL5tcTX4LWGhgWJAx4P-xQFDASXP8bSfEFznpDz_5CeKFj0Q4FKTC5MeHzmC-BI"/>
+<!-- Main Action Cards (Bento Style) -->
+<section class="grid md:grid-cols-2 gap-8 mb-16">
+<!-- Create Game Card -->
+<div class="bg-surface-container-low rounded-xl p-8 flex flex-col md:flex-row gap-6 hover:translate-y-[-4px] transition-transform duration-300">
+<div class="bg-surface-container-lowest p-6 rounded-lg w-fit h-fit bubbly-shadow">
+<span class="material-symbols-outlined text-5xl text-primary" style="font-variation-settings: 'FILL' 1;">sports_esports</span>
 </div>
-<div>
-<h3 class="font-headline text-2xl font-extrabold text-primary">Tạo trò chơi</h3>
-<p class="text-on-surface-variant font-medium mt-2">Biến bài học thành cuộc phiêu lưu kỳ thú</p>
+<div class="flex-1 space-y-4">
+<h2 class="font-headline font-bold text-2xl text-on-background">Tạo trò chơi</h2>
+<ul class="space-y-3">
+<li class="flex items-center gap-3 text-on-surface-variant font-medium">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                            Chọn dạng câu hỏi
+                        </li>
+<li class="flex items-center gap-3 text-on-surface-variant font-medium">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                            Dán văn bản hoặc tải file
+                        </li>
+<li class="flex items-center gap-3 text-on-surface-variant font-medium">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                            Bắt đầu chơi ngay
+                        </li>
+</ul>
+<button class="text-primary font-bold flex items-center gap-1 mt-4 group">
+                        Bắt đầu tạo <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
 </div>
-<span class="material-symbols-outlined text-4xl text-primary" data-icon="add_circle">add_circle</span>
 </div>
-<!-- Action Card 2 -->
-<div class="group bg-surface-container-lowest rounded-xl p-8 flex flex-col items-center text-center space-y-4 hover:shadow-2xl transition-all duration-300 border-b-8 border-tertiary-fixed cursor-pointer relative overflow-hidden">
-<div class="absolute top-0 left-0 w-full h-2 bg-tertiary"></div>
-<div class="w-32 h-32 bg-tertiary-container/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-<img alt="AI mascot" class="w-24 h-24" data-alt="A friendly brain-shaped robot character with digital eyes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLAWUo7m24evPHHWO9qAHFbPleP_8DiagfcwiEq-oxB4YYZ5BVr8xyxy2x1fJmOOQallFzgP09uL1ZMaUmpNqQPbtnZUnVG3CM3tM0bN4U23fmTICpZiQeqtgDRyZ4EW_nYhV7qSDXKfomxqGQ9rKikVbxcJSZWu5KCOMSfi2HS6ejzAnBCKtgo8zibdHnLyW3dN3s7MO4Tsuz0Lu9IZ47IgJ2VYoFIwKGUP9FBiJdOLSv3N9BRc0q36RH39mCQIrPeHcuEokS49E"/>
+<!-- AI Question Creator Card -->
+<div class="bg-surface-container-low rounded-xl p-8 flex flex-col md:flex-row gap-6 hover:translate-y-[-4px] transition-transform duration-300">
+<div class="bg-surface-container-lowest p-6 rounded-lg w-fit h-fit bubbly-shadow">
+<span class="material-symbols-outlined text-5xl text-tertiary" style="font-variation-settings: 'FILL' 1;">psychology</span>
 </div>
-<div>
-<h3 class="font-headline text-2xl font-extrabold text-tertiary">AI tạo câu hỏi</h3>
-<p class="text-on-surface-variant font-medium mt-2">Tạo bộ câu hỏi thông minh trong tích tắc</p>
+<div class="flex-1 space-y-4">
+<h2 class="font-headline font-bold text-2xl text-on-background">AI tạo câu hỏi</h2>
+<ul class="space-y-3">
+<li class="flex items-center gap-3 text-on-surface-variant font-medium">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+                            Tải ảnh sách / nhập liệu
+                        </li>
+<li class="flex items-center gap-3 text-on-surface-variant font-medium">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+                            AI tự động sinh câu hỏi
+                        </li>
+<li class="flex items-center gap-3 text-on-surface-variant font-medium">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+                            Tải về bản Word cực nhanh
+                        </li>
+</ul>
+<button class="text-tertiary font-bold flex items-center gap-1 mt-4 group">
+                        Thử ngay <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">auto_awesome</span>
+</button>
 </div>
-<span class="material-symbols-outlined text-4xl text-tertiary" data-icon="auto_awesome">auto_awesome</span>
 </div>
 </section>
-<!-- Game Library Section -->
-<section class="space-y-8 pb-12">
-<div class="flex justify-between items-end">
-<div class="space-y-1">
-<span class="text-secondary font-bold tracking-widest text-sm">XU HƯỚNG</span>
-<h2 class="font-headline text-3xl font-extrabold text-[#0055c4]">Trò chơi hot nhất</h2>
+<!-- Featured Games Section -->
+<section>
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="font-headline font-extrabold text-3xl text-on-background">Trò chơi nổi bật</h2>
+<p class="text-on-surface-variant mt-1">Những thử thách được yêu thích nhất tuần này</p>
 </div>
-<button class="text-primary font-bold hover:underline">Xem tất cả</button>
+<button class="text-primary font-bold flex items-center gap-1">
+                    Xem tất cả <span class="material-symbols-outlined">chevron_right</span>
+</button>
 </div>
-<!-- Grid of Game Box Art -->
-<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-<!-- Game 1 -->
-<div class="bg-surface-container-low rounded-xl overflow-hidden hover:scale-105 transition-transform cursor-pointer shadow-sm hover:shadow-xl">
-<div class="aspect-square bg-gradient-to-tr from-blue-400 to-indigo-500 p-4 relative">
-<img alt="game box" class="w-full h-full object-contain" data-alt="Colorful numbers and math symbols floating in space" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuGX0aADHvsdFGMot8-B_C_FnNP_ltq1tg_ZecXP3jZ_C1J2OqrBKeli0DEf7po0Yv_ca1MdxyMNCWR4O7n_bbemaH8Xrjl3Tw-9A_2AK7StcAt2k8Tvgu9pVSo9geQeAMpg9kbJQbpG2JTNpnVie0SHl5aFMJQf41Sa82ODYLMMXPHPwvhSPEK4b87ScUh-JEAbUXPpdZTEdnJV0_ptE1V2ebnC9K_jep-y-6qzLbeuanTIYx4Unsy4PbIQ0g4oVY4tulrqaWkeU"/>
-<div class="absolute top-2 right-2 bg-white/90 rounded-full px-2 py-1 flex items-center gap-1">
-<span class="material-symbols-outlined text-yellow-500 text-sm" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-xs font-bold text-on-surface">4.9</span>
+<div class="flex overflow-x-auto gap-6 pb-8 snap-x no-scrollbar">
+<!-- Game Card 1 -->
+<div class="min-w-[280px] bg-surface-container-lowest rounded-lg overflow-hidden bubbly-shadow snap-start hover:scale-[1.02] transition-transform duration-200">
+<div class="relative h-40 bg-primary-container">
+<img class="w-full h-full object-cover" data-alt="Fun 3D colorful math symbols floating in sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7PQQsjeckSeYuo_mon7PfQOkXWzbWXsIb5J5_zr-o02gN7Ir4uvqfe9oNp-MTw7-in5Xn-ZqVcZ5VP8JOvx6Ic_SPnTIn8ut9yj09SxjcNNsOXBhxM7mH5rCOyUk6WsnwMVWNQRcVF4VbznMok44j-LXPzX_IAUsYZfVVY1czHhbwgWAkeUq2pNcnGZb1GEk0jjwbcTDAPlgB7HEe-lVjvl0h-HoA44MQYHvuXUU7EioymRpUqlxlZSPM5nCkrguJD-tWDXWSQkY"/>
+<span class="absolute top-3 left-3 bg-error text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">HOT</span>
 </div>
+<div class="p-5 space-y-3">
+<h3 class="font-headline font-bold text-xl text-on-background">Toán học kỳ thú</h3>
+<div class="flex items-center gap-2">
+<div class="flex text-secondary-container">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 0;">star</span>
 </div>
-<div class="p-4 bg-white">
-<h4 class="font-headline font-bold text-on-surface truncate">Toán học kỳ thú</h4>
-<div class="flex items-center gap-2 mt-2">
-<span class="material-symbols-outlined text-sm text-on-surface-variant" data-icon="emoji_events">emoji_events</span>
-<span class="text-xs font-semibold text-on-surface-variant">Top 1 tuần</span>
+<span class="text-xs font-bold text-on-surface-variant">4.8 (2.4k)</span>
 </div>
-</div>
-</div>
-<!-- Game 2 -->
-<div class="bg-surface-container-low rounded-xl overflow-hidden hover:scale-105 transition-transform cursor-pointer shadow-sm hover:shadow-xl">
-<div class="aspect-square bg-gradient-to-tr from-orange-400 to-red-500 p-4 relative">
-<img alt="game box" class="w-full h-full object-contain" data-alt="Cartoon knight and a dragon book art" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBl15WfhyoEmweWP4Uh9O0Bci8CbJYGciP7CbModpedBr-NlrOh0XLlLeI4Xgu6Xg3B37KzEM-JRP5EtpLdwoJjH5Pua3Nd8qytna1_z_8seQR8Nookx8EOnbK_HeURILqOIPdWD5p-axdTh66bOcDul0h9oFYGD51-ANhExbaGpXGHDY_ruwx8Bfmisa7j2KzmUWUwvldVCgxWtj8virtN_FDUKzJNRv0DNy6oq4uCGTiHR2EG6g42YyjRwbK0IyMVvoQWXkWhq0A"/>
-<div class="absolute top-2 right-2 bg-white/90 rounded-full px-2 py-1 flex items-center gap-1">
-<span class="material-symbols-outlined text-yellow-500 text-sm" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-xs font-bold text-on-surface">4.7</span>
-</div>
-</div>
-<div class="p-4 bg-white">
-<h4 class="font-headline font-bold text-on-surface truncate">Sử ký anh hùng</h4>
-<div class="flex items-center gap-2 mt-2">
-<span class="material-symbols-outlined text-sm text-on-surface-variant" data-icon="groups">groups</span>
-<span class="text-xs font-semibold text-on-surface-variant">1.2k chơi</span>
+<div class="flex items-center justify-between pt-2">
+<span class="text-xs font-bold text-primary bg-primary/10 px-3 py-1 rounded-full">Khối 6-9</span>
+<button class="bg-primary text-white p-2 rounded-full hover:rotate-12 transition-transform">
+<span class="material-symbols-outlined">play_arrow</span>
+</button>
 </div>
 </div>
 </div>
-<!-- Game 3 -->
-<div class="bg-surface-container-low rounded-xl overflow-hidden hover:scale-105 transition-transform cursor-pointer shadow-sm hover:shadow-xl">
-<div class="aspect-square bg-gradient-to-tr from-green-400 to-emerald-600 p-4 relative">
-<img alt="game box" class="w-full h-full object-contain" data-alt="Laboratory flask with bubbles and colorful liquid" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPFldud1i7ZwyWSfPsNIUlPlcnyveBjBgi2Kgb9enF33HmsH6zEKLIcBMuRhgazDM71SXtZZZJLLINhfH5JKievik24q7Onwii-TIbTq6sgmu5xgVn15l6wPrKwQZ0q2h9lyIiHUCoB3-MHDqU4qws47jOuomCRE5NGWPHT7hk1Q5byGaPZBzZ9dU7aup6dehnygW-isvjlpgAqwQHEnMWbewfLhl42BefL_GUJNMErxW8H2K_1fzCwFL40aC-2aD63v3BzRBrFBE"/>
-<div class="absolute top-2 right-2 bg-white/90 rounded-full px-2 py-1 flex items-center gap-1">
-<span class="material-symbols-outlined text-yellow-500 text-sm" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-xs font-bold text-on-surface">4.8</span>
+<!-- Game Card 2 -->
+<div class="min-w-[280px] bg-surface-container-lowest rounded-lg overflow-hidden bubbly-shadow snap-start hover:scale-[1.02] transition-transform duration-200">
+<div class="relative h-40 bg-secondary-container/30">
+<img class="w-full h-full object-cover" data-alt="Vietnamese alphabet 3D stylized blocks" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPgOyiNvINF0tpxLx6HG9X0TzurU4hUpXX8aYe5efQzGYnCOJnBFnUaoK3-qlk478OOxtFz1IjzyWozpsP0WWRmsLrccAu5PJ4lAJoFjRq-p6Nx-M-m_JDptibuCGMoeiUvr5JVXmoZGuIFczaPrBnFYQukEqTvX9OdBa8vd_qeWPiO5kvmdFZDHYEKpBcSFRlz2z9GGD4KSUbzjljpJYh9wHWPiiyiuamn7BtgpzN9Hs1JQdEFgzvwE_bOGUng8yrNhU4eFxUJbM"/>
+<span class="absolute top-3 left-3 bg-tertiary text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">NEW</span>
+</div>
+<div class="p-5 space-y-3">
+<h3 class="font-headline font-bold text-xl text-on-background">Vua Tiếng Việt</h3>
+<div class="flex items-center gap-2">
+<div class="flex text-secondary-container">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="text-xs font-bold text-on-surface-variant">5.0 (1.1k)</span>
+</div>
+<div class="flex items-center justify-between pt-2">
+<span class="text-xs font-bold text-tertiary bg-tertiary/10 px-3 py-1 rounded-full">Tất cả</span>
+<button class="bg-primary text-white p-2 rounded-full hover:rotate-12 transition-transform">
+<span class="material-symbols-outlined">play_arrow</span>
+</button>
 </div>
 </div>
-<div class="p-4 bg-white">
-<h4 class="font-headline font-bold text-on-surface truncate">Thí nghiệm nhí</h4>
-<div class="flex items-center gap-2 mt-2">
-<span class="material-symbols-outlined text-sm text-on-surface-variant" data-icon="trending_up">trending_up</span>
-<span class="text-xs font-semibold text-on-surface-variant">Mới nhất</span>
 </div>
+<!-- Game Card 3 -->
+<div class="min-w-[280px] bg-surface-container-lowest rounded-lg overflow-hidden bubbly-shadow snap-start hover:scale-[1.02] transition-transform duration-200">
+<div class="relative h-40 bg-tertiary-container/20">
+<img class="w-full h-full object-cover" data-alt="Chemical laboratory glassware 3D icons" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzFihvSqk4wbmCtqWpKH_tkIlcVLIGQBC7Ww0PanbJ0jKbKEpC4NIQXWhVxhDEBTq1ycexnYLGKjpPpHuqdemRxOtDSdWfmn73RcEYAtgZtJt8Uh88og0iPeFpVJXufx5BHgZyjy1fTrbkSuybTaUvzi6MRja-pfY16tOyBBt0G4_wtaN11kx7k5lw5Y9UDmbxjqTu6N8jazCBuMxHDoBR3upWR8AL6528qPV04WL9Np3d1NoTeL9kujI7h7-S-P-eHPdt0dq42yo"/>
+<span class="absolute top-3 left-3 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">TRENDING</span>
 </div>
+<div class="p-5 space-y-3">
+<h3 class="font-headline font-bold text-xl text-on-background">Thám hiểm vũ trụ</h3>
+<div class="flex items-center gap-2">
+<div class="flex text-secondary-container">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 0;">star</span>
 </div>
-<!-- Game 4 -->
-<div class="bg-surface-container-low rounded-xl overflow-hidden hover:scale-105 transition-transform cursor-pointer shadow-sm hover:shadow-xl">
-<div class="aspect-square bg-gradient-to-tr from-purple-400 to-pink-500 p-4 relative">
-<img alt="game box" class="w-full h-full object-contain" data-alt="Global globe with speech bubbles in different languages" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsD9nhM7F5F8XpJhSU6bGBgSkTFEHfiBrXXz61fGR4E1uMZoDjQKxZEEUaBCI0mMTWkJM5JT_lgn_SUmyRdrGoIOoJLLhPxB27cBvlmggimVU_wfMpdfQLLVWH6gmx3PWWzA71vBw5nIMLh1JAk0SkKZsnB4mR9WedRT_iMHDpsS4BFkrudNg7Tg9lq4_pGEzEWPSO3ULdz-wK6s5XEYRbeEELJMdceH3j7PoBtNWTj_Yx2Sxy2m9BhELsGwb2OTGCFPGgxdfCJGQ"/>
-<div class="absolute top-2 right-2 bg-white/90 rounded-full px-2 py-1 flex items-center gap-1">
-<span class="material-symbols-outlined text-yellow-500 text-sm" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-xs font-bold text-on-surface">5.0</span>
+<span class="text-xs font-bold text-on-surface-variant">4.6 (5k+)</span>
 </div>
-</div>
-<div class="p-4 bg-white">
-<h4 class="font-headline font-bold text-on-surface truncate">Vua tiếng Việt</h4>
-<div class="flex items-center gap-2 mt-2">
-<span class="material-symbols-outlined text-sm text-on-surface-variant" data-icon="local_fire_department">local_fire_department</span>
-<span class="text-xs font-semibold text-on-surface-variant">Đang hot</span>
+<div class="flex items-center justify-between pt-2">
+<span class="text-xs font-bold text-error bg-error/10 px-3 py-1 rounded-full">Khối 10-12</span>
+<button class="bg-primary text-white p-2 rounded-full hover:rotate-12 transition-transform">
+<span class="material-symbols-outlined">play_arrow</span>
+</button>
 </div>
 </div>
 </div>
 </div>
 </section>
 </main>
-<!-- BottomNavBar -->
-<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 bg-white/70 dark:bg-slate-900/80 backdrop-blur-lg shadow-2xl rounded-t-xl pb-safe">
-<!-- Home (Active) -->
-<a class="flex flex-col items-center justify-center bg-gradient-to-b from-[#0055c4] to-[#2979FF] text-white rounded-full p-4 scale-110 -translate-y-2 shadow-lg transition-all duration-300 ease-out" href="#">
-<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
-<span class="font-['Plus_Jakarta_Sans'] font-bold text-[10px]">Home</span>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-end bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl z-50 rounded-t-xl px-4 pb-6 pt-2 shadow-[0_-10px_40px_rgba(0,85,196,0.08)]">
+<a class="flex flex-col items-center justify-center bg-gradient-to-br from-blue-600 to-blue-400 text-white rounded-full p-3 shadow-lg transform -translate-y-2 scale-110 transition-all" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-['Plus_Jakarta_Sans'] font-semibold text-[11px] tracking-wide mt-1">Home</span>
 </a>
-<!-- Games -->
-<a class="flex flex-col items-center justify-center text-slate-400 p-2 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-full transition-transform active:scale-90" href="#">
-<span class="material-symbols-outlined" data-icon="sports_esports">sports_esports</span>
-<span class="font-['Plus_Jakarta_Sans'] font-bold text-[10px]">Games</span>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 p-2 hover:text-blue-500 transition-colors" href="#">
+<span class="material-symbols-outlined">sports_esports</span>
+<span class="font-['Plus_Jakarta_Sans'] font-semibold text-[11px] tracking-wide">Games</span>
 </a>
-<!-- Progress -->
-<a class="flex flex-col items-center justify-center text-slate-400 p-2 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-full transition-transform active:scale-90" href="#">
-<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
-<span class="font-['Plus_Jakarta_Sans'] font-bold text-[10px]">Progress</span>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 p-2 hover:text-blue-500 transition-colors" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="font-['Plus_Jakarta_Sans'] font-semibold text-[11px] tracking-wide">Progress</span>
 </a>
-<!-- Settings -->
-<a class="flex flex-col items-center justify-center text-slate-400 p-2 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-full transition-transform active:scale-90" href="#">
-<span class="material-symbols-outlined" data-icon="settings">settings</span>
-<span class="font-['Plus_Jakarta_Sans'] font-bold text-[10px]">Settings</span>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 p-2 hover:text-blue-500 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['Plus_Jakarta_Sans'] font-semibold text-[11px] tracking-wide">Settings</span>
 </a>
 </nav>
 </body></html>

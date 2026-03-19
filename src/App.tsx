@@ -814,7 +814,11 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
             <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center overflow-hidden hover:scale-105 transition-transform active:scale-95 duration-200">
               <img alt="friendly mascot character" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmSJiKl98tZVAYx7gkYOpRphmxgZYcAPnF1fDMF1Fs7TQkYXkT6pHEnuQkBuAEwsX7Dm8zbjm3kero3MYDxmIRkLbRPTVKCsv5jX37c0EShmANz5NqiegbtKb9zWOeUdrTEqlJ-54EXf3NdB0Sc9xv_Lq1DNPmul5AzaqWx1BOZu9tkU2w4VwouYs6M5lWZi_4GrMspVjGR57BPuzcG7GQrQHBmAZL_Qtyx01p9gl8i1EBm0MkE9dzC6dkAuzQaDW4F-xyqLX0kPU"/>
             </div>
-            <h1 className="font-headline font-black text-2xl text-primary tracking-tight hidden sm:block">SmartEdu Play</h1>
+            <div className="hidden sm:block">
+              <h1 className="font-headline font-black text-3xl leading-none bg-gradient-to-r from-primary to-tertiary bg-clip-text text-transparent tracking-tight">SmartEdu Play</h1>
+              <p className="text-[11px] text-on-surface-variant/70 font-semibold mt-0.5 tracking-wide">Chào mừng bạn đến với SmartEdu Play! 👋</p>
+              <p className="text-[9px] text-on-surface-variant/35 font-medium mt-0.5 tracking-wide select-none">Developed by cô Quỳnh Trang</p>
+            </div>
           </div>
 
           {/* Step bar (center) */}
@@ -1580,97 +1584,118 @@ Nếu là Trả lời ngắn/Điền khuyết: bỏ options, correctAnswer là �
                     </button>
                   </div>
 
-                  {/* Khu A: Trò chơi tương tác online */}
-                  <div style={{ marginBottom:8, display:'flex', alignItems:'center', gap:8 }}>
-                    <span style={{ fontSize:13, fontWeight:700, color:'var(--blue)', textTransform:'uppercase', letterSpacing:.5 }}>🎮 Trò chơi tương tác online</span>
-                    <div style={{ flex:1, height:1, background:'var(--border)' }} />
+                  {/* Game selector header */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-widest text-primary font-label mb-1">🎮 TRÒ CHƠI TƯƠNG TÁC ONLINE</p>
+                      <h2 className="font-headline text-2xl font-extrabold text-on-surface">Chọn trò chơi</h2>
+                      <p className="text-on-surface-variant text-sm mt-1">
+                        {stage === 'm1_game' ? 'Lọc theo dạng câu hỏi đã chọn.' : 'Chọn trò chơi phù hợp với bộ câu hỏi AI vừa tạo.'}
+                      </p>
+                    </div>
+                    <button className="btn btn-secondary" onClick={() => setStage(stage === 'm1_game' ? 'm1_edit' : 'm2_questions')}>
+                      <ChevronRight size={15} style={{ transform:'rotate(180deg)' }} /> Quay lại
+                    </button>
                   </div>
-                  <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))', gap:20, marginBottom:28 }}>
+
+                  {/* Cards grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                     {GAME_LIBRARY.filter(g => {
                       const activeTypes = stage === 'm1_game' ? m1QuestionTypes : [...new Set(parsedQuestions.map(q => q.type))];
                       return activeTypes.length === 0 || activeTypes.some(t => g.compatibleTypes.includes(t));
                     }).map((g, idx) => {
-                      // Different gradient combos for 3D feel
-                      const gradients = [
-                        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        'linear-gradient(135deg, #0ea5e9 0%, #0055c4 100%)',
-                        'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                        'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-                        'linear-gradient(135deg, #f472b6 0%, #ec4899 100%)',
-                        'linear-gradient(135deg, #34d399 0%, #006a33 100%)',
-                        'linear-gradient(135deg, #0f172a 0%, #dc2626 100%)',
-                        'linear-gradient(135deg, #14b8a6 0%, #0891b2 100%)',
+                      // Stitch-style vivid gradient palettes per card
+                      const palettes = [
+                        { from: '#a855f7', to: '#7c3aed', shadow: 'rgba(168,85,247,0.35)' },
+                        { from: '#0ea5e9', to: '#0055c4', shadow: 'rgba(14,165,233,0.35)' },
+                        { from: '#f59e0b', to: '#f97316', shadow: 'rgba(245,158,11,0.35)' },
+                        { from: '#1a1a2e', to: '#374151', shadow: 'rgba(26,26,46,0.45)' },
+                        { from: '#ec4899', to: '#f43f5e', shadow: 'rgba(244,114,182,0.35)' },
+                        { from: '#10b981', to: '#059669', shadow: 'rgba(16,185,129,0.35)' },
+                        { from: '#14b8a6', to: '#0891b2', shadow: 'rgba(20,184,166,0.35)' },
+                        { from: '#ef4444', to: '#b91c1c', shadow: 'rgba(239,68,68,0.35)' },
+                        { from: '#8b5cf6', to: '#6366f1', shadow: 'rgba(139,92,246,0.35)' },
                       ];
-                      const shadows = [
-                        '0 10px 30px rgba(102,126,234,0.4)',
-                        '0 10px 30px rgba(0,85,196,0.4)',
-                        '0 10px 30px rgba(245,158,11,0.4)',
-                        '0 10px 30px rgba(26,26,46,0.5)',
-                        '0 10px 30px rgba(244,114,182,0.4)',
-                        '0 10px 30px rgba(52,211,153,0.4)',
-                        '0 10px 30px rgba(220,38,38,0.4)',
-                        '0 10px 30px rgba(20,184,166,0.4)',
-                      ];
-                      const bg = gradients[idx % gradients.length];
-                      const shadow = shadows[idx % shadows.length];
+                      const pal = palettes[idx % palettes.length];
                       return (
-                        <div key={g.id} style={{
-                          background: 'var(--color-surface-container-lowest)',
-                          borderRadius: '1.5rem',
-                          overflow: 'hidden',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          boxShadow: '0 4px 20px rgba(0,85,196,0.06)',
-                          transition: 'transform 0.2s, box-shadow 0.2s',
-                          cursor: 'pointer',
-                        }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = shadow; }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 20px rgba(0,85,196,0.06)'; }}>
-                          {/* Top: Large 3D icon banner - half the card */}
-                          <div style={{
-                            background: bg,
-                            minHeight: 160,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            padding: '20px 24px',
-                            position: 'relative',
-                            overflow: 'hidden',
-                          }}>
-                            {/* Decorative glare blob */}
-                            <div style={{ position:'absolute', top:-30, right:-30, width:100, height:100, background:'rgba(255,255,255,0.12)', borderRadius:'50%', filter:'blur(10px)' }} />
-                            <div style={{ position:'absolute', bottom:-20, left:-10, width:70, height:70, background:'rgba(255,255,255,0.08)', borderRadius:'50%', filter:'blur(8px)' }} />
-                            {/* Giant 3D emoji */}
-                            <div style={{
-                              fontSize: 90,
-                              lineHeight: 1,
-                              filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.35)) drop-shadow(0 2px 4px rgba(0,0,0,0.25))',
-                              transform: 'rotate(-8deg) scale(1.05)',
-                              zIndex: 2,
-                              userSelect: 'none',
-                            }}>{g.emoji}</div>
-                            {/* Right: game name tag floating */}
-                            <div style={{ textAlign:'right', zIndex: 2 }}>
-                              <div style={{
-                                background: 'rgba(255,255,255,0.2)',
-                                backdropFilter: 'blur(8px)',
-                                borderRadius: '1rem',
-                                padding: '8px 14px',
-                                display: 'inline-block',
-                              }}>
-                                <div style={{ fontSize:13, fontWeight:800, color:'rgba(255,255,255,0.95)', fontFamily:'var(--font-headline)', lineHeight:1.3 }}>{g.name}</div>
-                              </div>
+                        <div
+                          key={g.id}
+                          className="group flex flex-col rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-2"
+                          style={{
+                            background: 'var(--color-surface-container-lowest)',
+                            boxShadow: '0 4px 24px rgba(0,85,196,0.07)',
+                          }}
+                          onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.boxShadow = `0 12px 40px ${pal.shadow}`}
+                          onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 24px rgba(0,85,196,0.07)'}
+                        >
+                          {/* ── TOP: gradient banner with 3D icon ── */}
+                          <div
+                            className="relative flex items-center justify-between overflow-hidden"
+                            style={{
+                              background: `linear-gradient(135deg, ${pal.from} 0%, ${pal.to} 100%)`,
+                              minHeight: 148,
+                              padding: '16px 20px',
+                            }}
+                          >
+                            {/* Glare blobs */}
+                            <div style={{ position:'absolute', top:-30, right:-30, width:100, height:100, background:'rgba(255,255,255,0.15)', borderRadius:'50%', filter:'blur(14px)', pointerEvents:'none' }} />
+                            <div style={{ position:'absolute', bottom:-20, left:10, width:70, height:70, background:'rgba(255,255,255,0.08)', borderRadius:'50%', filter:'blur(10px)', pointerEvents:'none' }} />
+
+                            {/* 3D emoji icon */}
+                            <div
+                              className="select-none group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300"
+                              style={{
+                                fontSize: 80,
+                                lineHeight: 1,
+                                filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.4)) drop-shadow(0 3px 6px rgba(0,0,0,0.3))',
+                                transform: 'rotate(-10deg)',
+                                zIndex: 2,
+                              }}
+                            >
+                              {g.emoji}
+                            </div>
+
+                            {/* Game name chip — glassmorphism */}
+                            <div
+                              className="self-start ml-auto"
+                              style={{
+                                background: 'rgba(255,255,255,0.22)',
+                                backdropFilter: 'blur(10px)',
+                                WebkitBackdropFilter: 'blur(10px)',
+                                borderRadius: '0.85rem',
+                                padding: '6px 14px',
+                                border: '1px solid rgba(255,255,255,0.3)',
+                                zIndex: 2,
+                              }}
+                            >
+                              <span style={{ fontSize: 13, fontWeight: 800, color: '#fff', fontFamily: 'var(--font-headline)', lineHeight: 1.3, display: 'block', textAlign: 'right' }}>
+                                {g.name}
+                              </span>
                             </div>
                           </div>
-                          {/* Bottom: Info + Button */}
-                          <div style={{ padding:'16px 20px', display:'flex', flexDirection:'column', gap:10, flex:1 }}>
-                            <p style={{ fontSize:13, color:'var(--text-3)', lineHeight:1.6, margin:0 }}>{g.description}</p>
-                            <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
-                              {g.compatibleTypes.map(t => <span key={t} className="badge badge-slate">{t}</span>)}
+
+                          {/* ── BOTTOM: info + CTA ── */}
+                          <div className="flex flex-col gap-3 p-5 flex-1">
+                            <p className="text-sm text-on-surface-variant leading-relaxed" style={{ margin: 0 }}>
+                              {g.description}
+                            </p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {g.compatibleTypes.map(t => (
+                                <span
+                                  key={t}
+                                  className="text-[10px] font-bold px-2.5 py-1 rounded-full"
+                                  style={{ background: 'var(--color-surface-container-high)', color: 'var(--color-on-surface-variant)' }}
+                                >
+                                  {t}
+                                </span>
+                              ))}
                             </div>
-                            <button className="btn btn-primary btn--sm" style={{ width:'100%', justifyContent:'center', marginTop:4 }}
-                              onClick={() => setSelectedGameId(g.id)}>
-                              <span className="material-symbols-outlined" style={{fontSize:16}}>sports_esports</span>
+                            <button
+                              className="btn btn-primary btn--sm mt-auto"
+                              style={{ width: '100%', justifyContent: 'center' }}
+                              onClick={() => setSelectedGameId(g.id)}
+                            >
+                              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>sports_esports</span>
                               Chọn trò chơi
                             </button>
                           </div>
